@@ -1,4 +1,4 @@
-name: [TM] CI
+name: Test Manager CI
 
 # Controls when the workflow will run
 on:
