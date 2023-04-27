@@ -2,6 +2,9 @@
   "folders": [
     {
       "path": "TM"
+    },
+    {
+      "path": "."
     }
   ],
   "settings": {}
