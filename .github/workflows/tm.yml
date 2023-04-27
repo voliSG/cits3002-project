@@ -21,8 +21,8 @@ jobs:
         python-version: [3.10.10]
 
     defaults:
-    run:
-      working-directory: ./tm
+      run:
+        working-directory: ./tm
 
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
