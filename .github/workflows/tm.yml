@@ -22,7 +22,7 @@ jobs:
 
     defaults:
       run:
-        working-directory: ./tm
+        working-directory: tm
 
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
