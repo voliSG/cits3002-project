@@ -11,7 +11,6 @@ on:
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
-
 jobs:
   CI:
     runs-on: ${{ matrix.os }}
@@ -27,16 +26,18 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Setup Python Env 🏗
+        working-directory: ./tm
         uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python-version }}
           architecture: x64
 
       - name: Install Python Dependencies 👨🏻‍💻
-        run: pip install -r tm/requirements.txt
+        working-directory: ./tm
+        run: pip install -r requirements.txt
 
       - name: Run Linter 👀
         run: |
-          flake8 tm/app
-          black tm/app --check --diff
-          isort tm/app --check
+          flake8 app
+          black app --check --diff
+          isort app --check
