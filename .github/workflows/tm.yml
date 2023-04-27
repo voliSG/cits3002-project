@@ -1,4 +1,4 @@
-name: CI
+name: [TM] CI
 
 # Controls when the workflow will run
 on:
@@ -33,7 +33,7 @@ jobs:
           architecture: x64
 
       - name: Install Python Dependencies 👨🏻‍💻
-        run: pip install -r requirements.txt
+        run: pip install -r tm/requirements.txt
 
       - name: Run Linter 👀
         run: |
