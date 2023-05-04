@@ -1,4 +1,0 @@
-[tool.djlint]
-profile="jinja"
-exclude="venv"
-ignore="J018"
