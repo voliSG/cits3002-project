@@ -15,3 +15,5 @@ while True:
         print("Keyboard Interrupt sent.")
         tm.shutdown()
         exit(0)
+    except Exception:
+        exit(0)
