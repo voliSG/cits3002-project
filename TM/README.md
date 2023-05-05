@@ -39,8 +39,5 @@ python main.py
 
 ## Development
 
-To test template generation:
-
-```bash
-python -m tests.test_template
-```
+Routes can be configured in `app/routes.py`
+Templates are by default in `app/templates`
