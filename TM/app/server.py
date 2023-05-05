@@ -47,7 +47,11 @@ class TMHandler(BaseHTTPRequestHandler):
 
             if api_route is None:
                 status = 404
-                self.__set_response(status, '{ "message": "Error 404: Not Found" }')
+                self.__set_response(
+                    status,
+                    '{ "message": "Error 404: Not Found" }',
+                    {"Content-Type": "application/json"},
+                )
                 return
 
             api_action = api_route.get("GET")
@@ -55,7 +59,9 @@ class TMHandler(BaseHTTPRequestHandler):
             if api_action is None:
                 status = 501
                 self.__set_response(
-                    status, '{ "message": "Error 501: Not Implemented" }'
+                    status,
+                    '{ "message": "Error 501: Not Implemented" }',
+                    {"Content-Type": "application/json"},
                 )
                 return
 
@@ -92,14 +98,22 @@ class TMHandler(BaseHTTPRequestHandler):
 
         if api_route is None:
             status = 404
-            self.__set_response(status, '{ "message": "Error 404: Not Found" }')
+            self.__set_response(
+                status,
+                '{ "message": "Error 404: Not Found" }',
+                {"Content-Type": "application/json"},
+            )
             return
 
         api_action = api_route.get("POST")
 
         if api_action is None:
             status = 501
-            self.__set_response(status, '{ "message": "Error 501: Not Implemented" }')
+            self.__set_response(
+                status,
+                '{ "message": "Error 501: Not Implemented" }',
+                {"Content-Type": "application/json"},
+            )
             return
 
         (status, content) = api_action(query, post_data)
@@ -116,7 +130,7 @@ class TMHandler(BaseHTTPRequestHandler):
             content = "Error 500: Internal Server Error"
         return content
 
-    def __set_response(self, code, body, headers=None):
+    def __set_response(self, code, body, headers):
         self.send_response(code)
 
         if headers:
