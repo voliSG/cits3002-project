@@ -90,7 +90,7 @@ class QBserver {
         // Endpoint for fetching questions from the Questions Bank arrays, based on the
         // query parameter, numQuestions, which indicates how many questions should be
         // fetched.
-        server.createContext("/api/question", (exchange -> {
+        server.createContext("/api/getQuestions", (exchange -> {
             String respText = "";
             int numQuestions = Integer.parseInt(exchange.getRequestURI().getQuery().split("=")[1]);
 
