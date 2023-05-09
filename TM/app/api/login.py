@@ -2,7 +2,7 @@ import base64
 import json
 
 from app import users
-from app.helpers import check_login
+from app.api.helpers import check_login
 
 
 def POST_login(query, body):

@@ -1,15 +1,9 @@
-import base64
 import json
-import os
-import pathlib
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from threading import Thread
 from urllib.parse import urlparse
 
-from app.helpers import check_login
 from app.routes import api_folder, api_routes, page_routes
-
-from . import users
 
 
 class TMServer(Thread):
@@ -59,9 +53,7 @@ class TMHandler(BaseHTTPRequestHandler):
                 )
                 return
 
-            route = api_route.get("GET")
-            action = route["action"]
-            protected = route["protected"]
+            action = api_route.get("GET")
 
             if action is None:
                 status = 501
@@ -72,24 +64,23 @@ class TMHandler(BaseHTTPRequestHandler):
                 )
                 return
 
-            (status, content) = action(query)
+            (status, content, headers) = action(
+                query, token=self.headers.get("Authorization")
+            )
             self.__set_response(
                 status,
                 content,
-                {"Content-Type": "application/json"},
+                {"Content-Type": "application/json", **headers},
             )
 
         # handle pages
         else:
-            template_route = page_routes.get(path)
+            action = page_routes.get(path, "404")
 
-            if template_route is None:
-                template_route = page_routes.get("404")
-                status = 404
-            else:
-                status = 200
+            status, template, headers = action(
+                query, token=self.headers.get("Authorization")
+            )
 
-            status, template = self.__load_template(template_route)
             self.__set_response(status, template, {"Content-Type": "text/html"})
 
     def do_POST(self):
@@ -131,47 +122,6 @@ class TMHandler(BaseHTTPRequestHandler):
             status, content, {"Content-Type": "application/json", **headers}
         )
 
-    def __load_template(self, template_route):
-        status = 500
-        template = "Error 500: Internal Server Error"
-
-        try:
-            if template_route["protected"]:
-                token = self.headers["Authorization"]
-
-                (username, password) = self.__decode_token(token)
-
-                if username is None or password is None:
-                    status = 401
-                    template = "Error 401: Unauthorized"
-                    return status, template
-
-                status = check_login(username, password)
-
-                match status:
-                    case 200:
-                        pass
-                    case 401:
-                        self.send_header(
-                            "WWW-Authenticate", 'Basic realm="Login Required"'
-                        )
-                        template = "Error 401: Unauthorized"
-                    case 400:
-                        template = "Error 400: Bad Request"
-                    case _:
-                        template = "Error 500: Internal Server Error"
-
-            full_path = os.path.join(
-                pathlib.Path(__file__).parent.resolve(),
-                template_route["path"],
-            )
-
-            f = open(full_path, "r")
-            template = f.read()
-        except Exception as e:
-            print(e)
-        return status, template
-
     def __set_response(self, code, body, headers):
         self.send_response(code)
 
@@ -181,9 +131,3 @@ class TMHandler(BaseHTTPRequestHandler):
         self.end_headers()
 
         self.wfile.write(bytes(body, "utf-8"))
-
-    def __decode_token(self, token):
-        if token is None:
-            return None, None
-        (username, password) = base64.b64decode(token).decode("utf-8").split(":")
-        return username, password

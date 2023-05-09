@@ -1,22 +1,21 @@
 import app.api as api
-
-template_folder = "templates"
-api_folder = "api"
+from app import pages
+from app.config import api_folder
 
 page_routes = {
-    "404": {"path": f"{template_folder}/404.html", "protected": False},
-    "/": {"path": f"{template_folder}/index.html", "protected": True},
-    "/login": {"path": f"{template_folder}/login.html", "protected": False},
+    "404": pages.not_found.GET_404,
+    "/": pages.home.GET_home,
+    "/login": pages.login.GET_login,
 }
 
 api_routes = {
     f"/{api_folder}/login": {
-        "POST": {"action": api.login.POST_login, "protected": False},
+        "POST": api.login.POST_login,
     },
     f"/{api_folder}/test": {
-        "GET": {"action": api.test.GET_questions, "protected": True},
+        "GET": api.test.GET_questions,
     },
     f"/{api_folder}/answer": {
-        "GET": {"action": api.test.POST_answer, "protected": True},
+        "GET": api.test.POST_answer,
     },
 }
