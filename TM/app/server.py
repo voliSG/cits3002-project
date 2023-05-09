@@ -1,5 +1,5 @@
-from http.cookies import SimpleCookie
 import json
+from http.cookies import SimpleCookie
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from threading import Thread
 from urllib.parse import urlparse
