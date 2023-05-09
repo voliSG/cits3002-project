@@ -1,3 +1,4 @@
+from http.cookies import SimpleCookie
 import json
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from threading import Thread
@@ -40,6 +41,10 @@ class TMHandler(BaseHTTPRequestHandler):
         query = parsed_path.query
         path = parsed_path.path
 
+        cookies = SimpleCookie(self.headers.get("Cookie"))
+        token_cookie = cookies.get("token")
+        token = token_cookie.value if token_cookie is not None else None
+
         # handle api
         if path.startswith(f"/{api_folder}"):
             api_route = api_routes.get(path)
@@ -64,9 +69,7 @@ class TMHandler(BaseHTTPRequestHandler):
                 )
                 return
 
-            (status, content, headers) = action(
-                query, token=self.headers.get("Authorization")
-            )
+            (status, content, headers) = action(query, token=token)
             self.__set_response(
                 status,
                 content,
@@ -75,11 +78,12 @@ class TMHandler(BaseHTTPRequestHandler):
 
         # handle pages
         else:
-            action = page_routes.get(path, "404")
+            action = page_routes.get(path)
 
-            status, template, headers = action(
-                query, token=self.headers.get("Authorization")
-            )
+            if action is None:
+                action = page_routes.get("404")
+
+            status, template, headers = action(query, token=token)
 
             self.__set_response(status, template, {"Content-Type": "text/html"})
 

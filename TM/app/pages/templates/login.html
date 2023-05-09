@@ -38,7 +38,8 @@
           const body = await response.json();
 
           if (response.ok) {
-            sessionStorage.setItem("token", body.token);
+            document.cookie = `token=${body.token}; SameSite=Lax`;
+            window.location.href = "/";
           } else {
             alert(
               `Login failed with error ${response.status}: ${body.message}`
