@@ -6,6 +6,10 @@ from .. import users
 
 
 def decode_token(token):
+    """
+    Converts a base64 encoded token into a username and password which should be in the format username:password
+    """
+
     if token is None:
         return None, None
     (username, password) = base64.b64decode(token).decode("utf-8").split(":")
@@ -13,6 +17,10 @@ def decode_token(token):
 
 
 def check_login(username, password):
+    """
+    Checks the username and password against the users dictionary
+    """
+
     if None in (username, password):
         status = 400
     else:
@@ -27,6 +35,11 @@ def check_login(username, password):
 
 
 def protected(func):
+    """
+    An awesome decorator that makes the function (endpoint) return early with
+    the error if the user does not provide their auth cookie in the request
+    """
+
     def wrapper_protected(*args, **kwargs):
         status = 500
         template = "Error 500: Internal Server Error"

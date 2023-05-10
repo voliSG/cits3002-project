@@ -35,17 +35,22 @@ class TMServer(Thread):
 
 class TMHandler(BaseHTTPRequestHandler):
     def do_GET(self):
+        """
+        GET Requests
+        """
+
         status = 500
 
         parsed_path = urlparse(self.path)
         query = parsed_path.query
         path = parsed_path.path
 
+        # get auth token from cookie
         cookies = SimpleCookie(self.headers.get("Cookie"))
         token_cookie = cookies.get("token")
         token = token_cookie.value if token_cookie is not None else None
 
-        # handle api
+        # handle api endpoints
         if path.startswith(f"/{api_folder}"):
             api_route = api_routes.get(path)
 
@@ -88,6 +93,11 @@ class TMHandler(BaseHTTPRequestHandler):
             self.__set_response(status, template, {"Content-Type": "text/html"})
 
     def do_POST(self):
+        """
+        POST Requests
+            We assume all requests are JSON with JSON responses for simplicity
+        """
+
         status = 500
 
         parsed_path = urlparse(self.path)
@@ -127,6 +137,9 @@ class TMHandler(BaseHTTPRequestHandler):
         )
 
     def __set_response(self, code, body, headers):
+        """
+        Set the response for the request
+        """
         self.send_response(code)
 
         if headers:
