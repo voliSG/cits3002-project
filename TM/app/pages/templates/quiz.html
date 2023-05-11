@@ -11,6 +11,43 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Test Taker - Home</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script type="text/javascript">
+      function submitAnswer(id) {
+        // gives the question number
+        const qId = id.split("-")[0];
+
+        console.log(`Submitting answer for question ID ${qId}`);
+
+        let answer = "";
+        let type = "mc";
+
+        // try multi choice
+        let a = document.querySelector(`input[name="q${qId}"]:checked`);
+
+        if (!a) {
+          // try code
+          a = document.querySelector(`textarea[name="q${qId}"]`);
+          if (!a) {
+            console.error("Uh oh! Could not find your answer!");
+            return;
+          }
+
+          answer = a.value;
+          type = "code";
+        } else {
+          answer = a.value;
+        }
+
+        if (!answer) {
+          console.error("Something went seriously wrong...");
+          return;
+        }
+
+        console.log(`Answer (${type}): ${answer}`);
+
+        // TODO query the TM, which then queries the QB to check the answer
+      }
+    </script>
   </head>
   <body
     class="flex flex-col justify-center items-center bg-slate-200 h-screen w-screen"
@@ -21,51 +58,11 @@
       <h1 class="text-3xl font-extrabold">Test Taker!</h1>
     </header>
     <main class="flex flex-col h-full">
-      <section class="flex flex-col h-full p-4">
-        <ol class="list-decimal list-inside flex flex-col gap-2">
-          <div>
-            <li class="whitespace-pre-line">
-              What is the difference between a list and a tuple?\n a) Lists are
-              immutable, tuples are mutable\n b) Lists are mutable, tuples are
-              immutable\n c) Lists can store any data type while tuples are for
-              integers only \n d) There is no difference\n
-            </li>
-            <textarea
-              class="w-full"
-              placeholder="Enter your answer here"
-            ></textarea>
-          </div>
-          <div>
-            <li class="whitespace-pre-line">
-              What is the order of precedence in python?\n a) Exponential,
-              Parentheses, Multiplication, Division, Addition, Subtraction\n b)
-              Exponential, Parentheses, Division, Multiplication, Addition,
-              Subtraction\n c) Parentheses, Exponential, Multiplication,
-              Division, Subtraction, Addition\n d) Parentheses, Exponential,
-              Multiplication, Division, Addition, Subtraction\n
-            </li>
-            <textarea
-              class="w-full"
-              placeholder="Enter your answer here"
-            ></textarea>
-          </div>
-          <div>
-            <li>
-              Write a program to print the first 10 numbers of the fibonacci
-              sequence\n
-            </li>
-            <textarea
-              class="w-full"
-              placeholder="Enter your answer here"
-            ></textarea>
-          </div>
-          <div>
-            <li>Write a function named lcm to find the LCM of two numbers\n</li>
-            <textarea
-              class="w-full"
-              placeholder="Enter your answer here"
-            ></textarea>
-          </div>
+      <section class="flex flex-col h-full p-8">
+        <ol
+          class="list-decimal list-inside flex flex-col gap-8 marker:font-bold"
+        >
+          {%QUESTIONS%}
         </ol>
       </section>
     </main>

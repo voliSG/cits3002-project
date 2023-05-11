@@ -1,0 +1,23 @@
+<div class="flex flex-col p-2 gap-2 {%CORRECT%}">
+  <li>{%QUESTION%}</li>
+  <textarea
+    class="w-full rounded p-2"
+    name="q{%ID%}"
+    placeholder="Enter your answer here"
+    {%DISABLED%}
+  >
+{%CURRENT_ANSWER%}</textarea
+  >
+  <div class="flex justify-center">
+    <button
+      class="bg-slate-50 px-4 py-2 w-fit rounded enabled:hover:bg-slate-300"
+      type="button"
+      id="{%ID%}-submit"
+      onClick="submitAnswer(this.id)"
+      {%DISABLED%}
+    >
+      Submit
+    </button>
+  </div>
+  <p>{%ANSWER%}</p>
+</div>
