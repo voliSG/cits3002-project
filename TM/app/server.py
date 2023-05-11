@@ -1,5 +1,5 @@
-import os
-import pathlib
+import json
+from http.cookies import SimpleCookie
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from threading import Thread
 from urllib.parse import urlparse
@@ -35,13 +35,22 @@ class TMServer(Thread):
 
 class TMHandler(BaseHTTPRequestHandler):
     def do_GET(self):
+        """
+        GET Requests
+        """
+
         status = 500
 
         parsed_path = urlparse(self.path)
         query = parsed_path.query
         path = parsed_path.path
 
-        # handle api
+        # get auth token from cookie
+        cookies = SimpleCookie(self.headers.get("Cookie"))
+        token_cookie = cookies.get("token")
+        token = token_cookie.value if token_cookie is not None else None
+
+        # handle api endpoints
         if path.startswith(f"/{api_folder}"):
             api_route = api_routes.get(path)
 
@@ -54,9 +63,9 @@ class TMHandler(BaseHTTPRequestHandler):
                 )
                 return
 
-            api_action = api_route.get("GET")
+            action = api_route.get("GET")
 
-            if api_action is None:
+            if action is None:
                 status = 501
                 self.__set_response(
                     status,
@@ -65,34 +74,39 @@ class TMHandler(BaseHTTPRequestHandler):
                 )
                 return
 
-            (status, content) = api_action(query)
+            (status, content, headers) = action(query, token=token)
             self.__set_response(
                 status,
                 content,
-                {"Content-Type": "application/json"},
+                {"Content-Type": "application/json", **headers},
             )
 
         # handle pages
         else:
-            template_path = page_routes.get(path)
+            action = page_routes.get(path)
 
-            if template_path is None:
-                template_path = page_routes.get("404")
-                status = 404
-            else:
-                status = 200
+            if action is None:
+                action = page_routes.get("404")
 
-            template = self.__load_template(template_path)
+            status, template, headers = action(query, token=token)
+
             self.__set_response(status, template, {"Content-Type": "text/html"})
 
     def do_POST(self):
+        """
+        POST Requests
+            We assume all requests are JSON with JSON responses for simplicity
+        """
+
         status = 500
 
         parsed_path = urlparse(self.path)
         query = parsed_path.query
         path = parsed_path.path
+
         content_length = int(self.headers["Content-Length"])
-        post_data = self.rfile.read(content_length)
+        post_data = self.rfile.read(content_length).decode("utf-8")
+        payload = json.loads(post_data)
 
         api_route = api_routes.get(path)
 
@@ -116,21 +130,16 @@ class TMHandler(BaseHTTPRequestHandler):
             )
             return
 
-        (status, content) = api_action(query, post_data)
+        (status, content, headers) = api_action(query, payload)
 
-        self.__set_response(status, content, {"Content-Type": "application/json"})
-
-    def __load_template(self, path):
-        try:
-            full_path = os.path.join(pathlib.Path(__file__).parent.resolve(), path)
-            f = open(full_path, "r")
-            content = f.read()
-        except Exception as e:
-            print(e)
-            content = "Error 500: Internal Server Error"
-        return content
+        self.__set_response(
+            status, content, {"Content-Type": "application/json", **headers}
+        )
 
     def __set_response(self, code, body, headers):
+        """
+        Set the response for the request
+        """
         self.send_response(code)
 
         if headers:

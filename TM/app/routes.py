@@ -1,12 +1,15 @@
 import app.api as api
+from app import pages
+from app.config import api_folder
 
-template_folder = "templates"
-api_folder = "api"
+"""
+These dictionaries simply store functions to execute for each route
+"""
 
 page_routes = {
-    "404": f"{template_folder}/404.html",
-    "/": f"{template_folder}/index.html",
-    "/login": f"{template_folder}/login.html",
+    "404": pages.not_found.GET_404,
+    "/": pages.home.GET_home,
+    "/login": pages.login.GET_login,
 }
 
 api_routes = {
