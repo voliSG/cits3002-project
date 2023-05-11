@@ -42,7 +42,7 @@ questions = [
 ]
 
 
-# @protected
+@protected
 def GET_quiz(query, token=None):
     status = 200
     template = load_template("quiz.html")
