@@ -66,6 +66,7 @@ def GET_quiz(query, token=None):
 
         qa_html = qa_html.replace("{%QUESTION%}", q_html)
         qa_html = qa_html.replace("{%ID%}", str(q["id"]))
+        qa_html = qa_html.replace("{%ATTEMPTS%}", f"{q['attempts']}/{MAX_ATTEMPTS}")
 
         # check or fill in their latest answer
         if q["type"] == "mc":
