@@ -2,10 +2,30 @@ import os
 import pickle
 
 users = [
-    {"username": "123", "password": "456"},
-    {"username": "789", "password": "101112"},
-    {"username": "131415", "password": "161718"},
-    {"username": "192021", "password": "222324"},
+    {
+        "username": "123",
+        "password": "456",
+        "questions": [
+            "What is your favorite color?",
+            "What is your favorite food?",
+            "What is your favorite animal?",
+        ],
+    },
+    {
+        "username": "789",
+        "password": "101112",
+        "questions": [],
+    },
+    {
+        "username": "131415",
+        "password": "161718",
+        "questions": [],
+    },
+    {
+        "username": "192021",
+        "password": "222324",
+        "questions": [],
+    },
 ]
 
 full_path = os.path.realpath(__file__)

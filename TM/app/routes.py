@@ -10,6 +10,7 @@ page_routes = {
     "404": pages.not_found.GET_404,
     "/": pages.home.GET_home,
     "/login": pages.login.GET_login,
+    "/logout": pages.logout.GET_logout,
 }
 
 api_routes = {

@@ -15,12 +15,11 @@ def POST_login(query, body):
 
     status = check_login(username, password)
 
-    match status:
-        case 200:
-            auth_bytes = f"{username}:{password}".encode("ascii")
-            token = base64.b64encode(auth_bytes).decode("ascii")
-            response = {"message": "Login successful.", "token": token}
-        case 401:
-            response = {"message": "Invalid username or password."}
+    if status == 200:
+        auth_bytes = f"{username}:{password}".encode("ascii")
+        token = base64.b64encode(auth_bytes).decode("ascii")
+        response = {"message": "Login successful.", "token": token}
+    elif status == 401:
+        response = {"message": "Invalid username or password."}
 
     return status, json.dumps(response), headers

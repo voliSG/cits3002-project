@@ -11,14 +11,37 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Test Taker - Home</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script type="text/javascript">
+      const login = () => {
+        window.location.href = "/login";
+      };
+
+      const logout = () => {
+        window.location.href = "/logout";
+      };
+    </script>
   </head>
   <body
     class="flex flex-col justify-center items-center gap-4 bg-slate-200 h-screen w-screen"
   >
     <header
-      class="flex justify-center items-center bg-slate-300 w-full p-4 h-20"
+      class="flex justify-between items-center bg-slate-300 w-full p-4 h-20"
     >
       <h1 class="text-3xl font-extrabold">Test Taker!</h1>
+      <div class="flex gap-2">
+        <button
+          class="bg-slate-400 px-4 py-2 rounded enabled:hover:bg-slate-500"
+          onclick="login()"
+        >
+          Login
+        </button>
+        <button
+          class="bg-slate-400 px-4 py-2 rounded enabled:hover:bg-slate-500"
+          onclick="logout()"
+        >
+          Logout
+        </button>
+      </div>
     </header>
     <main class="flex flex-col h-full">
       <section class="flex flex-col justify-center items-center h-full">
