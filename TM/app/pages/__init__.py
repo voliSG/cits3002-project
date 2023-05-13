@@ -1,1 +1,1 @@
-from . import home, login, not_found, quiz
+from . import home, login, logout, not_found, quiz

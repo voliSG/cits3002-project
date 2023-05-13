@@ -10,7 +10,7 @@ def decode_token(token):
     Converts a base64 encoded token into a username and password which should be in the format username:password
     """
 
-    if token is None:
+    if token is None or token == "":
         return None, None
     (username, password) = base64.b64decode(token).decode("utf-8").split(":")
     return username, password
@@ -54,16 +54,15 @@ def protected(func):
 
         status = check_login(username, password)
 
-        match status:
-            case 200:
-                pass
-            case 401:
-                template = "Error 401: Unauthorized"
-                headers = {"WWW-Authenticate": "Basic"}
-                return status, template, headers
-            case 400:
-                template = "Error 400: Bad Request"
-                return status, template, headers
+        if status == 200:
+            pass
+        elif status == 401:
+            template = "Error 401: Unauthorized"
+            headers = {"WWW-Authenticate": "Basic"}
+            return status, template, headers
+        elif status == 400:
+            template = "Error 400: Bad Request"
+            return status, template, headers
 
         return func(args)
 
