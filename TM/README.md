@@ -52,7 +52,7 @@ Configure the api and template folder name in `app/config.py`
 The database uses Python's `pickle` module to serialise and deserialise data to and from a file
 Find the pickles in `app/pickles`, along with some scripts to seed them
 
-If modifing `app/pickles/seed_*.py`, you need to comment out `atexit.register(exit_handler)` in `app/__init__.py`
+If you're running the seed scripts from the root directory with `python -m app.pickles.seed_*`, you need to you need to comment out `atexit.register(exit_handler)` in `app/__init__.py` before running
 
 ### Server
 
