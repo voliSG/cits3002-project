@@ -7,6 +7,8 @@ users = []
 
 with open(users_pickle, "rb") as pfile:
     users = pickle.load(pfile)
+    print("Users loaded!")
+    print(users)
 
 
 def exit_handler():
