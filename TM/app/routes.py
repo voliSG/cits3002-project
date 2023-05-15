@@ -11,6 +11,7 @@ page_routes = {
     "/": pages.home.GET_home,
     "/login": pages.login.GET_login,
     "/logout": pages.logout.GET_logout,
+    "/quiz": pages.quiz.GET_quiz,
 }
 
 api_routes = {

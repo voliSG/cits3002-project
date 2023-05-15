@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="description" content="Take a test" />
+    <meta
+      name="keywords"
+      content="test, manager, question, bank, python, java, c, coding"
+    />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Test Taker - Home</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script type="text/javascript">
+      function submitAnswer(id) {
+        // gives the question number
+        const qId = id.split("-")[0];
+
+        console.log(`Submitting answer for question ID ${qId}`);
+
+        let answer = "";
+        let type = "mc";
+
+        // try multi choice
+        let a = document.querySelector(`input[name="q${qId}"]:checked`);
+
+        if (!a) {
+          // try code
+          a = document.querySelector(`textarea[name="q${qId}"]`);
+          if (!a) {
+            console.error("Uh oh! Could not find your answer!");
+            return;
+          }
+
+          answer = a.value;
+          type = "code";
+        } else {
+          answer = a.value;
+        }
+
+        if (!answer) {
+          console.error("Something went seriously wrong...");
+          return;
+        }
+
+        console.log(`Answer (${type}): ${answer}`);
+
+        // TODO query the TM, which then queries the QB to check the answer
+      }
+    </script>
+  </head>
+  <body
+    class="flex flex-col justify-center items-center bg-slate-200 h-screen w-screen"
+  >
+    <header
+      class="flex justify-center items-center bg-slate-300 w-full p-4 h-20"
+    >
+      <h1 class="text-3xl font-extrabold">Test Taker!</h1>
+    </header>
+    <main class="flex flex-col h-full">
+      <section class="flex flex-col h-full p-8">
+        <ol
+          class="list-decimal list-inside flex flex-col gap-8 marker:font-bold"
+        >
+          {%QUESTIONS%}
+        </ol>
+      </section>
+    </main>
+  </body>
+</html>

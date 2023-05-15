@@ -104,7 +104,7 @@ hang-closing = True
 # W503 - line break before binary operator
 # F401 - module imported but unused
 # F403 - ‘from module import *’ used; unable to detect undefined names
-#
+# E501 - line too long
 
 # Specify a list of codes to ignore.
 ignore =
@@ -114,6 +114,7 @@ ignore =
     F401,
     F811,
     J018,
+    E501,
 # Specify the list of error codes you wish Flake8 to report.
 select =
     E,
