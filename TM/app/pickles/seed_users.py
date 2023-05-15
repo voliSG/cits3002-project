@@ -34,3 +34,4 @@ users_pickle = os.path.join(os.path.dirname(full_path), "users.pickle")
 with open(users_pickle, "wb") as pfile:
     pickle.dump(users, pfile)
     print("Users seeded! Yummy!")
+    print(users)

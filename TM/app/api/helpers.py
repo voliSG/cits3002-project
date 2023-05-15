@@ -16,6 +16,13 @@ def decode_token(token):
     return username, password
 
 
+def is_new_login(user):
+    """
+    Checks if the user is logging in for the first time
+    """
+    return len(user.get("questions")) > 0
+
+
 def check_login(username, password):
     """
     Checks the username and password against the users dictionary
@@ -31,7 +38,9 @@ def check_login(username, password):
             status = 401
         else:
             status = 200
-    return status
+            print(found_user)
+            is_new = is_new_login(found_user)
+    return status, is_new
 
 
 def protected(func):
