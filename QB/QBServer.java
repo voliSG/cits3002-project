@@ -8,7 +8,7 @@ import java.net.InetSocketAddress;
 
 import com.sun.net.httpserver.HttpServer;
 
-class QBserver {
+public class QBServer {
     // an object called QApair that stores two string values, a question and an
     // answer
     static class QApair {
