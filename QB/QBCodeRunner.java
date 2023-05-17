@@ -1,9 +1,10 @@
-package qbcoderunner;
+package qb;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Writer;
 import java.util.concurrent.TimeUnit;
@@ -42,10 +43,13 @@ public class QBCodeRunner {
         return file;
     }
 
-    private void compileC(File file) throws IOException, InterruptedException {
+    private String compileC(File file) throws IOException, InterruptedException {
+        String fileDirOut = ("gcc " + file.getAbsolutePath() + " -o " + file.getAbsolutePath() + ".out");
         Process process = Runtime.getRuntime()
-                .exec("gcc " + file.getAbsolutePath() + " -o " + file.getAbsolutePath() + ".out");
+                .exec(fileDirOut);
         process.waitFor(timeout, TimeUnit.SECONDS);
+
+        return fileDirOut;
     }
 
     private String runPython(String code) throws IOException, InterruptedException {
@@ -79,15 +83,48 @@ public class QBCodeRunner {
 
     private String runC(String code) throws IOException, InterruptedException {
         File file = saveCode(code, ".c");
-        compileC(file);
+        String compiledFileDir = compileC(file);
 
-        return "output";
+        Process process = Runtime.getRuntime()
+                .exec(compiledFileDir);
+        // process.waitFor(timeout, TimeUnit.SECONDS);
+
+        // Read the process output
+        BufferedReader stdInput = new BufferedReader(new InputStreamReader(process.getInputStream(), "UTF-8"));
+        BufferedReader stdError = new BufferedReader(new InputStreamReader(process.getErrorStream(), "UTF-8"));
+
+        // Wait for the process to complete
+        int exitCode = process.waitFor();
+
+        String output = "";
+        String o = "";
+        while ((o = stdInput.readLine()) != null) {
+            output += o + "\n";
+        }
+
+        String error = "";
+        String e = "";
+        while ((e = stdError.readLine()) != null) {
+            error += e + "\n";
+        }
+
+        // Check the exit code
+        if (exitCode == 0) {
+            System.out.println("C program executed successfully.");
+        } else {
+            System.out.println("C program execution failed with exit code: " + exitCode);
+        }
+
+        return output;
     }
 
     public static void main(String[] args) {
-        QBCodeRunner runner = new QBCodeRunner();
+        String language = "c";
+        int timeout = 5;
+        QBCodeRunner runner = new QBCodeRunner(language, timeout);
         try {
-            System.out.println(runner.run("print('Hello World')\nprint('this is a second line')"));
+            // System.out.println(runner.run("print('Hello World')\nprint('this is a second line')"));
+            System.out.println("> " + runner.run("#include <stdio.h>\n\nint main() {\n\tprintf(\"Hello, World!\\n\");\n\treturn 0;\n}"));
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();
         }
