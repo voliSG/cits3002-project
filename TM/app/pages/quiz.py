@@ -1,5 +1,6 @@
 from app.api.helpers import protected
 from app.pages.helpers import load_template, replace_nth
+import requests
 
 MAX_ATTEMPTS = 3
 
@@ -41,9 +42,25 @@ questions = [
     },
 ]
 
+NUM_QUESTIONS_PER_QUIZ = 3
+
 
 @protected
 def GET_quiz(query, token=None):
+
+    # URL endpoint of QB to fetch questions from
+    url = "http://localhost:8001/api/getQuestions?numQs=" + \
+        str(NUM_QUESTIONS_PER_QUIZ)
+    # Send GET request
+    response = requests.get(url)
+    data = None
+    # Check the response status code
+    if response.status_code == 200:  # Successful response
+        data = response.json()  # Parse response as JSON
+        # You can now access the data using the same syntax as a Python dict, e.g data["questions"] <-- try printing that, you'll get what I mean.
+    else:
+        print("Request failed with status code:", response.status_code)
+
     status = 200
     template = load_template("quiz.html")
 
@@ -66,7 +83,8 @@ def GET_quiz(query, token=None):
 
         qa_html = qa_html.replace("{%QUESTION%}", q_html)
         qa_html = qa_html.replace("{%ID%}", str(q["id"]))
-        qa_html = qa_html.replace("{%ATTEMPTS%}", f"{q['attempts']}/{MAX_ATTEMPTS}")
+        qa_html = qa_html.replace(
+            "{%ATTEMPTS%}", f"{q['attempts']}/{MAX_ATTEMPTS}")
 
         # check or fill in their latest answer
         if q["type"] == "mc":
@@ -77,7 +95,8 @@ def GET_quiz(query, token=None):
                 MC_MAP.get(q.get("current_answer"), -1),
             )
         else:
-            qa_html = qa_html.replace("{%CURRENT_ANSWER%}", q.get("current_answer", ""))
+            qa_html = qa_html.replace(
+                "{%CURRENT_ANSWER%}", q.get("current_answer", ""))
 
         # if correct, disable the question and colour it green
         if q["correct"]:
