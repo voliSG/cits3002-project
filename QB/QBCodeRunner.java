@@ -1,3 +1,5 @@
+package qbcoderunner;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileWriter;
@@ -8,18 +10,20 @@ import java.util.concurrent.TimeUnit;
 
 public class QBCodeRunner {
     private int timeout = 5;
+    private String language = "python";
 
     public QBCodeRunner() {
     }
 
-    public QBCodeRunner(int timeout) {
+    public QBCodeRunner(String language, int timeout) {
+        this.language = language;
         this.timeout = timeout;
     }
 
-    public String run(String code, String language) throws IOException, InterruptedException {
-        if (language.equals("python")) {
+    public String run(String code) throws IOException, InterruptedException {
+        if (this.language.equals("python")) {
             return runPython(code);
-        } else if (language.equals("c")) {
+        } else if (this.language.equals("c")) {
             return runC(code);
         } else {
             return "Invalid language";
@@ -83,7 +87,7 @@ public class QBCodeRunner {
     public static void main(String[] args) {
         QBCodeRunner runner = new QBCodeRunner();
         try {
-            System.out.println(runner.run("print('Hello World')\nprint('this is a second line')", "python"));
+            System.out.println(runner.run("print('Hello World')\nprint('this is a second line')"));
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();
         }
