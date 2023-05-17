@@ -1,8 +1,8 @@
 // Reference used to implement QB: 
 // Setting up a REST API in pure Java: https://medium.com/consulner/framework-less-rest-api-in-java-dd22d4d642fa
 //
-package qb;
-import qb.QBCodeRunner;
+// package qb;
+// import qb.QBCodeRunner;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -149,10 +149,10 @@ class QBserver {
 
             // if question requires code input, run code and save output as user_answer
             if (qid >= 3) {
-                System.out.println("code question");
+                System.out.println("Code question");
                 try {
                     user_answer = runner.run(user_answer);
-                } catch (IOException | InterruptedException e) {
+                } catch (IOException | InterruptedException | BadCodeException e) {
                     e.printStackTrace();
                 }
             }
