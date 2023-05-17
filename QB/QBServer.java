@@ -1,6 +1,8 @@
 // Reference used to implement QB: 
 // Setting up a REST API in pure Java: https://medium.com/consulner/framework-less-rest-api-in-java-dd22d4d642fa
 //
+package qbcoderunner;
+import qbcoderunner.QBCodeRunner;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -34,13 +36,11 @@ class QBserver {
                     "d) Parentheses, Exponential, Multiplication, Division, Addition, Subtraction"),
             new QApair(
                     "Write a Python program to print the first 10 numbers of the fibonacci sequence\n",
-                    "0\n1\n1\n2\n3\n5\n8\n13\n21\n34"),
+                    "0\n1\n1\n2\n3\n5\n8\n13\n21\n34\n"),
             new QApair(
                     "Write a python program to print the sum of squares of an array of integers.\nThe initial values of the array are [2, 3, 4] and must be hard coded.",
-                    "29")
+                    "29\n")
     };
-
-    // "a = 0\nb = 1\nfor i in range(10):\n\tprint(a)\n\tc = a + b\n\ta = b\n\tb = c"
 
     // Array of QApairs that will be used to store the C questions and answers
     private static QApair[] CQuestionBank = {
@@ -52,13 +52,11 @@ class QBserver {
                     "a) Memory allocation is the process of reserving a partial or complete portion of computer memory for the execution of programs and processes"),
             new QApair(
                     "Write a C program that finds the maximum element in an integer array and prints its value.\nThe initial values of the array are {5, 8, 3, 12, 6}, and must be hard-coded in the program\n",
-                    "12"),
+                    "12\n"),
             new QApair(
                     "Write a C program that computes the factorial of a given number and prints the result.\nThe initial value of the number is \"5\", must be hard-coded in the program.",
-                    "120")
+                    "120\n")
     };
-
-
 
 
     public static void main(String[] args) throws IOException {
@@ -80,6 +78,11 @@ class QBserver {
         // A variable to store which bank of questions to use based on whether the input
         // is python or c
         QApair[] questionBank = args[1].equals("python") ? PythonQuestionBank : CQuestionBank;
+
+        // initialise code runner - set language and timeout
+        String language = args[1].equals("python") ? "python" : "c";
+        int timeout = 5;
+        QBCodeRunner runner = new QBCodeRunner(language, timeout);
 
         String logPrefix = "[QBserver - " + args[1] + "] ";
 
@@ -134,7 +137,6 @@ class QBserver {
         // a question is correct
         // Takes question id and user response parameters
         server.createContext("/api/checkQuestion", (exchange -> {
-            System.out.println("checkQuestion");
             String[] params = exchange.getRequestURI().getQuery().split("&");
             // get question id
             int qid = Integer.parseInt(params[0].split("=")[1]);
@@ -144,6 +146,16 @@ class QBserver {
 
             // init responseBool which holds if question is correct or incorrect
             String respText = "False";
+
+            // if question requires code input, run code and save output as user_answer
+            if (qid >= 3) {
+                System.out.println("code question");
+                try {
+                    user_answer = runner.run(user_answer);
+                } catch (IOException | InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
 
             // retreive expected answer (mcq)
             String expected_answer = questionBank[qid].answer;
