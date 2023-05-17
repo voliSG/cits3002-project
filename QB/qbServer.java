@@ -8,6 +8,7 @@ import java.net.InetSocketAddress;
 
 import com.sun.net.httpserver.HttpServer;
 
+
 class QBserver {
     // an object called QApair that stores two string values, a question and an
     // answer
@@ -27,16 +28,19 @@ class QBserver {
     private static QApair[] PythonQuestionBank = {
             new QApair(
                     "What is the difference between a list and a tuple?\n a) Lists are immutable, tuples are mutable\n b) Lists are mutable, tuples are immutable\n c) Lists can store any data type while tuples are for integers only \n d) There is no difference\n",
-                    "Lists are mutable, tuples are immutable"),
+                    "a)Lists are mutable, tuples are immutable"),
             new QApair(
                     "What is the order of precedence in python?\n a) Exponential, Parentheses, Multiplication, Division, Addition, Subtraction\n b) Exponential, Parentheses, Division, Multiplication, Addition, Subtraction\n c) Parentheses, Exponential, Multiplication, Division, Subtraction, Addition\n d) Parentheses, Exponential, Multiplication, Division, Addition, Subtraction\n",
                     "d) Parentheses, Exponential, Multiplication, Division, Addition, Subtraction"),
             new QApair(
-                    "Write a program to print the first 10 numbers of the fibonacci sequence\n",
-                    "a = 0\nb = 1\nfor i in range(10):\n\tprint(a)\n\tc = a + b\n\ta = b\n\tb = c"),
-            new QApair("Write a function named lcm to find the LCM of two numbers\n",
-                    "def lcm(a, b):\n\tif a > b:\n\t\tgreater = a\n\telse:\n\t\tgreater = b\n\twhile(True):\n\t\tif((greater % a == 0) and (greater % b == 0)):\n\t\t\tlcm = greater\n\t\t\tbreak\n\t\tgreater += 1\n\treturn lcm")
+                    "Write a Python program to print the first 10 numbers of the fibonacci sequence\n",
+                    "0\n1\n1\n2\n3\n5\n8\n13\n21\n34"),
+            new QApair(
+                    "Write a python program to print the sum of squares of an array of integers.\nThe initial values of the array are [2, 3, 4] and must be hard coded.",
+                    "29")
     };
+
+    // "a = 0\nb = 1\nfor i in range(10):\n\tprint(a)\n\tc = a + b\n\ta = b\n\tb = c"
 
     // Array of QApairs that will be used to store the C questions and answers
     private static QApair[] CQuestionBank = {
@@ -47,12 +51,15 @@ class QBserver {
                     "What is memory allocation in C?\n a) Memory allocation is the process of reserving a partial or complete portion of computer memory for the execution of programs and processes\n b) Memory allocation is the process of reserving a partial or complete portion of computer memory for the storage of data\n c) Memory allocation is the process of reserving a partial or complete portion of computer memory for the storage of programs and processes\n d) Memory allocation is the process of reserving a partial or complete portion of computer memory for the execution of data\n",
                     "a) Memory allocation is the process of reserving a partial or complete portion of computer memory for the execution of programs and processes"),
             new QApair(
-                    "Write a function named isEven to check if a number is even or odd\n",
-                    "int isEven(int n) {\n\tif (n % 2 == 0)\n\t\treturn 1;\n\telse\n\t\treturn 0;\n}"),
+                    "Write a C program that finds the maximum element in an integer array and prints its value.\nThe initial values of the array are {5, 8, 3, 12, 6}, and must be hard-coded in the program\n",
+                    "12"),
             new QApair(
-                    "Write a function named isPrime to check if a number is prime or not\n",
-                    "int isPrime(int n) {\n\tint i;\n\tfor (i = 2; i <= n / 2; ++i) {\n\t\tif (n % i == 0) {\n\t\t\treturn 0;\n\t\t}\n\t}\n\treturn 1;\n}")
+                    "Write a C program that computes the factorial of a given number and prints the result.\nThe initial value of the number is \"5\", must be hard-coded in the program.",
+                    "120")
     };
+
+
+
 
     public static void main(String[] args) throws IOException {
         if (args.length != 2) {
@@ -122,6 +129,37 @@ class QBserver {
             exchange.close();
             System.out.println(logPrefix + "Sent " + numQuestions + " questions to client!");
         }));
+
+        // Endpoint that returns a boolean based on if the user's response to
+        // a question is correct
+        // Takes question id and user response parameters
+        server.createContext("/api/checkQuestion", (exchange -> {
+            System.out.println("checkQuestion");
+            String[] params = exchange.getRequestURI().getQuery().split("&");
+            // get question id
+            int qid = Integer.parseInt(params[0].split("=")[1]);
+
+            // get user answer
+            String user_answer = params[1].split("=")[1];
+
+            // init responseBool which holds if question is correct or incorrect
+            String respText = "False";
+
+            // retreive expected answer (mcq)
+            String expected_answer = questionBank[qid].answer;
+
+            if (user_answer.equals(expected_answer)) {
+                respText = "True";
+            }
+
+            exchange.sendResponseHeaders(200, respText.getBytes().length);
+            OutputStream output = exchange.getResponseBody();
+            output.write(respText.getBytes());
+            output.flush();
+            exchange.close();
+            System.out.println("Response Correct?: " + respText);
+        }));
+
 
         server.setExecutor(null); // creates a default executor
         server.start();
