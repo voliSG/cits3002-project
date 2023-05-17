@@ -1,8 +1,8 @@
 // Reference used to implement QB: 
 // Setting up a REST API in pure Java: https://medium.com/consulner/framework-less-rest-api-in-java-dd22d4d642fa
 //
-package qbcoderunner;
-import qbcoderunner.QBCodeRunner;
+package qb;
+import qb.QBCodeRunner;
 
 import java.io.IOException;
 import java.io.OutputStream;

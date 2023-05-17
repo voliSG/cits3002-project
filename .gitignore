@@ -1,3 +1,4 @@
 QB/*.class
 QB/tmp/*.py
 QB/tmp/*.c
+*.class
