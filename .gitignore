@@ -1,4 +1,4 @@
-QB/*.class
 QB/tmp/*.py
 QB/tmp/*.c
+*.out
 *.class
