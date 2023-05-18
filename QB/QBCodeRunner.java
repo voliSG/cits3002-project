@@ -8,20 +8,20 @@ import java.util.concurrent.TimeUnit;
 
 public class QBCodeRunner {
     private int timeout = 5;
-    private String language = "python";
+    private Language language = Language.PYTHON;
 
     public QBCodeRunner() {
     }
 
-    public QBCodeRunner(String language, int timeout) {
+    public QBCodeRunner(Language language, int timeout) {
         this.language = language;
         this.timeout = timeout;
     }
 
     public String run(String code) throws IOException, InterruptedException, BadCodeException {
-        if (this.language.equals("python")) {
+        if (this.language == Language.PYTHON) {
             return runPython(code);
-        } else if (this.language.equals("c")) {
+        } else if (this.language == Language.C) {
             return runC(code);
         } else {
             return "Invalid language";
@@ -131,7 +131,7 @@ public class QBCodeRunner {
     }
 
     public static void main(String[] args) {
-        String language = "c";
+        Language language = Language.C;
         int timeout = 5;
         QBCodeRunner runner = new QBCodeRunner(language, timeout);
         try {
