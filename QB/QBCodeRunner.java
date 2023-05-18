@@ -6,6 +6,9 @@ import java.io.InputStreamReader;
 import java.io.Writer;
 import java.util.concurrent.TimeUnit;
 
+import enums.Language;
+import exceptions.BadCodeException;
+
 public class QBCodeRunner {
     private int timeout = 5;
     private Language language = Language.PYTHON;

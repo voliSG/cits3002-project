@@ -10,6 +10,9 @@ import com.sun.net.httpserver.HttpServer;
 import banks.CBank;
 import banks.PythonBank;
 import banks.QAPair;
+import enums.Language;
+import enums.QuestionType;
+import exceptions.BadCodeException;
 
 public class QBServer {
     private static final int NUM_QUESTIONS = 4;
@@ -99,31 +102,43 @@ public class QBServer {
             String userAnswer = params[1].split("=")[1];
 
             // init responseBool which holds if question is correct or incorrect
-            String respText = "False";
+            String response = "";
+
+            QAPair question = questionBank[qid];
 
             // if question requires code input, run code and save output as user_answer
-            if (qid >= 3) {
+            if (question.type == QuestionType.CODE) {
                 System.out.println("Code question");
                 try {
                     userAnswer = runner.run(userAnswer);
-                } catch (IOException | InterruptedException | BadCodeException e) {
+                } catch (BadCodeException e) {
+                    // terminate early if code is bad
+                    response = "{ \"correct\": false }";
+                    exchange.sendResponseHeaders(200, response.getBytes().length);
+                    exchange.sendResponseHeaders(200, response.getBytes().length);
+                    OutputStream output = exchange.getResponseBody();
+                    output.write(response.getBytes());
+                    output.flush();
+                    exchange.close();
+                    return;
+                } catch (IOException | InterruptedException e) {
                     e.printStackTrace();
                 }
             }
 
             // retreive expected answer (mcq)
-            String expected_answer = questionBank[qid].answer;
+            String expected_answer = question.answer;
 
             if (userAnswer.equals(expected_answer)) {
-                respText = "True";
+                response = "{ \"correct\": true }";
             }
 
-            exchange.sendResponseHeaders(200, respText.getBytes().length);
+            exchange.sendResponseHeaders(200, response.getBytes().length);
             OutputStream output = exchange.getResponseBody();
-            output.write(respText.getBytes());
+            output.write(response.getBytes());
             output.flush();
             exchange.close();
-            System.out.println("Response Correct?: " + respText);
+            System.out.println("Response Correct?: " + response);
         }));
 
     }
