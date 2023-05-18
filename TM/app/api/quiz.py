@@ -31,14 +31,14 @@ def POST_answer(query, body, **kwargs):
         status = 400
         response = {"error": "User not found. Somehow..."}
         return status, json.dumps(response), {}
-    
+
     question_index = find(users[user_index]["questions"], "id", q_id)
 
     if question_index == -1:
         status = 400
         response = {"error": "Question not found."}
         return status, json.dumps(response), {}
-    
+
     question = users[user_index]["questions"][question_index]
 
     if question["attempts"] >= MAX_ATTEMPTS:
@@ -70,6 +70,5 @@ def POST_answer(query, body, **kwargs):
         response = {"correct": False}
     else:
         response = {"correct": True}
-
 
     return status, json.dumps(response), {}

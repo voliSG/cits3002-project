@@ -2,6 +2,7 @@ import base64
 
 from .. import users
 
+
 def find(list, key, value):
     for i, dic in enumerate(list):
         if dic[key] == value:

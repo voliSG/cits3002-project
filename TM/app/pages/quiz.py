@@ -68,7 +68,7 @@ def fetch_questions(url, num_questions):
         for question in questionData:
             print(question)
 
-        return questionData['questions']
+        return questionData["questions"]
 
     except urllib.error.URLError as e:
         print("An error occurred:", e)
@@ -76,15 +76,14 @@ def fetch_questions(url, num_questions):
 
 def updateQuestionsSchema(questions):
     for question in questions:
-        question['attempts'] = 0
-        question['correct'] = False
+        question["attempts"] = 0
+        question["correct"] = False
 
     return questions
 
 
 @protected
-def GET_quiz(query, token=None):
-
+def GET_quiz(query, token=None, username=None):
     # # get auth token from cookie
     # cookies = SimpleCookie(self.headers.get("Cookie"))
     # token_cookie = cookies.get("token")
@@ -98,9 +97,9 @@ def GET_quiz(query, token=None):
 
         # # fetch questions
         questions_py = fetch_questions(
-            qb_python + "/api/getQuestions?numQs=", num_python)
-        questions_c = fetch_questions(
-            qb_c + "/api/getQuestions?numQs=", num_c)
+            qb_python + "/api/getQuestions?numQs=", num_python
+        )
+        questions_c = fetch_questions(qb_c + "/api/getQuestions?numQs=", num_c)
         updateQuestionsSchema(questions_py)
         updateQuestionsSchema(questions_c)
         questions[username] = questions_py + questions_c
@@ -113,8 +112,6 @@ def GET_quiz(query, token=None):
 
     # generate html from questions list in users
     template = load_template("quiz.html")
-
-    user = next((user for user in users if user["username"] == username), None)
 
     questions_html = ""
     for i, q in enumerate(questions[username]):
@@ -135,8 +132,7 @@ def GET_quiz(query, token=None):
 
         qa_html = qa_html.replace("{%QUESTION%}", q_html)
         qa_html = qa_html.replace("{%ID%}", str(q["id"]))
-        qa_html = qa_html.replace(
-            "{%ATTEMPTS%}", f"{q['attempts']}/{MAX_ATTEMPTS}")
+        qa_html = qa_html.replace("{%ATTEMPTS%}", f"{q['attempts']}/{MAX_ATTEMPTS}")
 
         # check or fill in their latest answer
         if q["id"] == 0 or q["id"] == 1:
@@ -147,8 +143,7 @@ def GET_quiz(query, token=None):
                 MC_MAP.get(q.get("current_answer"), -1),
             )
         else:
-            qa_html = qa_html.replace(
-                "{%CURRENT_ANSWER%}", q.get("current_answer", ""))
+            qa_html = qa_html.replace("{%CURRENT_ANSWER%}", q.get("current_answer", ""))
 
         # if correct, disable the question and colour it green
         if q["correct"]:
