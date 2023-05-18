@@ -1,1 +1,1 @@
-from . import login, test
+from . import login, quiz

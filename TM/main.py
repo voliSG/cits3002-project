@@ -1,11 +1,13 @@
 from time import sleep
 
 from app.server import TMServer
+from app.config import qb_python, qb_c
 
 host = "localhost"
 port = 8080
 
-tm = TMServer(host, port)
+
+tm = TMServer(host, port, qb_python, qb_c)
 tm.start()
 
 while True:

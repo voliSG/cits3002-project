@@ -5,7 +5,7 @@ from app import users
 from app.api.helpers import check_login
 
 
-def POST_login(query, body):
+def POST_login(query, body, **kwargs):
     status = 500
     response = {"message": "Internal server error."}
     headers = {}

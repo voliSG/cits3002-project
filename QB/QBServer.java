@@ -56,7 +56,7 @@ public class QBServer {
         // Endpoint for fetching questions from the Questions Bank arrays, based on the
         // query parameter, numQuestions, which indicates how many questions should be
         // fetched.
-        server.createContext("/api/getQuestions", (exchange -> {
+        server.createContext("/api/questions", (exchange -> {
             String respText = "";
             int numQuestions = Integer.parseInt(exchange.getRequestURI().getQuery().split("=")[1]);
 
@@ -93,13 +93,13 @@ public class QBServer {
         // Endpoint that returns a boolean based on if the user's response to
         // a question is correct
         // Takes question id and user response parameters
-        server.createContext("/api/checkQuestion", (exchange -> {
+        server.createContext("/api/questions/check", (exchange -> {
             String[] params = exchange.getRequestURI().getQuery().split("&");
             // get question id (first param)
             int qid = Integer.parseInt(params[0].split("=")[1]);
 
             // get user answer (second param)
-            String userAnswer = params[1].split("=")[1];
+            String answer = params[1].split("=")[1];
 
             // init responseBool which holds if question is correct or incorrect
             String response = "";
@@ -110,7 +110,7 @@ public class QBServer {
             if (question.type == QuestionType.CODE) {
                 System.out.println("Code question");
                 try {
-                    userAnswer = runner.run(userAnswer);
+                    answer = runner.run(answer);
                 } catch (BadCodeException e) {
                     // terminate early if code is bad
                     response = "{ \"correct\": false }";
@@ -127,9 +127,9 @@ public class QBServer {
             }
 
             // retreive expected answer (mcq)
-            String expected_answer = question.answer;
+            String expectedAnswer = question.answer;
 
-            if (userAnswer.equals(expected_answer)) {
+            if (answer.equals(expectedAnswer)) {
                 response = "{ \"correct\": true }";
             }
 

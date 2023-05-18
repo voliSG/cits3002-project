@@ -73,6 +73,6 @@ def protected(func):
             template = "Error 400: Bad Request"
             return status, template, headers
 
-        return func(args)
+        return func(*args, **kwargs, username=username)
 
     return wrapper_protected
