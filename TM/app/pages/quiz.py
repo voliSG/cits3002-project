@@ -1,5 +1,6 @@
-from app.api.helpers import protected
-from app.pages.helpers import load_template, replace_nth
+from app.api.helpers import protected, decode_token
+from app.pages.helpers import *
+from app import users
 import requests
 
 MAX_ATTEMPTS = 3
@@ -45,12 +46,10 @@ questions = [
 NUM_QUESTIONS_PER_QUIZ = 3
 
 
-@protected
-def GET_quiz(query, token=None):
-
+def fetch_questions(url, num_questions):
     # URL endpoint of QB to fetch questions from
-    url = "http://localhost:8001/api/getQuestions?numQs=" + \
-        str(NUM_QUESTIONS_PER_QUIZ)
+    # append number of questions as param
+    url += str(num_questions)
     # Send GET request
     response = requests.get(url)
     data = None
@@ -61,7 +60,34 @@ def GET_quiz(query, token=None):
     else:
         print("Request failed with status code:", response.status_code)
 
-    status = 200
+
+# not sure if this is how it works??
+def save_questions_userdb(question, token):
+    username = decode_token(token)[0]
+
+    # found_user = next(
+    # (user for user in users if user["username"] == username), None
+    # )
+    
+    # print(found_user)
+
+
+
+@protected
+def GET_quiz(query, token):
+    # # randomise question distribution
+    num_python, num_c = get_question_distribution(NUM_QUESTIONS_PER_QUIZ)
+
+    # # fetch questions
+    questions_py = fetch_questions("http://localhost:8001/api/getQuestions?numQs=", num_python)
+    questions_c = fetch_questions("http://localhost:8002/api/getQuestions?numQs=", num_c)
+
+    # # save questions to user db
+    # # python questions will always be before c questions
+
+
+
+    # generate html from questions list in users
     template = load_template("quiz.html")
 
     questions_html = ""
@@ -119,6 +145,9 @@ def GET_quiz(query, token=None):
         questions_html += qa_html
 
     template = template.replace("{%QUESTIONS%}", questions_html)
-
+    status = 200
     headers = {}
     return status, template, headers
+
+if __name__ == "__main__":
+    pass
