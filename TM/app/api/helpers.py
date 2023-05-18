@@ -1,6 +1,6 @@
 import base64
 
-from .. import users
+from app import users
 
 
 def find(list, key, value):

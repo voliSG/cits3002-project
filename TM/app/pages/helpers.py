@@ -28,10 +28,3 @@ def replace_nth(string, sub, wanted, n):
     after = after.replace(sub, wanted, 1)
     newString = before + after
     return newString
-
-
-def get_question_distribution(num_questions):
-    num_python = random.randint(0, num_questions)
-    num_c = num_questions - num_python
-
-    return num_python, num_c

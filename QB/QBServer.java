@@ -78,10 +78,10 @@ public class QBServer {
             }
 
             for (int i = 0; i < numQuestions; i++) {
-                // respText += Integer.toString(i) + " %k " +
-                // questionBank[randomNumbers[i]].question + " %e";
+                QAPair question = questionBank[randomNumbers[i]];
                 respText += "\t\t{\n\t\t\t\"id\": " + randomNumbers[i] + ",\n\t\t\t\"question\": \""
-                        + questionBank[randomNumbers[i]].question.replace("\n", "\\n") + "\"\n\t\t}";
+                        + question.question.replace("\n", "\\n") + "\",\n\t\t\t\"type\": \""
+                        + question.type + "\"\n\t\t}";
                 if (i != numQuestions - 1) {
                     respText += ",\n";
                 } else {

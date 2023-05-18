@@ -31,6 +31,7 @@ def POST_answer(query, body, **kwargs):
         response = {"error": "User not found. Somehow..."}
         return status, json.dumps(response), {}
 
+    # ! something is broken
     question_index = find(users[user_index]["questions"], "id", q_id)
 
     if question_index == -1:

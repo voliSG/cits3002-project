@@ -1,8 +1,59 @@
 import base64
 import json
+import random
+from urllib.error import URLError
+from urllib.request import Request, urlopen
 
 from app import users
 from app.api.helpers import check_login
+from app.config import qb_c, qb_python
+
+NUM_QUESTIONS_PER_QUIZ = 4
+
+
+def get_question_distribution(num_questions):
+    num_python = random.randint(0, num_questions)
+    num_c = num_questions - num_python
+
+    return num_python, num_c
+
+
+def fetch_questions(url, num_questions):
+    # URL endpoint of QB to fetch questions from
+    # append number of questions as param
+    url += str(num_questions)
+    # Create a request object with the URL
+    request = Request(url)
+
+    try:
+        # Send the request and get the response
+        response = urlopen(request)
+
+        # Read the response content
+        data = response.read()
+
+        # Assuming the response data is in JSON format
+        # You can parse and process the data here
+        # For example:
+        questionData = json.loads(data)
+
+        # Print the questions
+        for question in questionData:
+            print(question)
+
+        return questionData["questions"]
+
+    except URLError as e:
+        print("An error occurred:", e)
+
+
+def updateQuestionsSchema(questions):
+    for question in questions:
+        question["attempts"] = 0
+        question["correct"] = False
+        question["current_answer"] = ""
+
+    return questions
 
 
 def POST_login(query, body, **kwargs):
@@ -21,9 +72,23 @@ def POST_login(query, body, **kwargs):
         response = {"message": "Login successful.", "token": token}
 
         if not is_new:
-            # TODO get questions from the QB
             print("New login!")
-            pass
+
+            # randomise question distribution
+            num_python, num_c = get_question_distribution(NUM_QUESTIONS_PER_QUIZ)
+
+            # fetch questions
+            questions_py = fetch_questions(
+                qb_python + "/api/getQuestions?numQs=", num_python
+            )
+            questions_c = fetch_questions(qb_c + "/api/getQuestions?numQs=", num_c)
+
+            updateQuestionsSchema(questions_py)
+            updateQuestionsSchema(questions_c)
+
+            user = next(u for u in users if u["username"] == username)
+
+            user["questions"] = questions_py + questions_c
 
     elif status == 401:
         response = {"message": "Invalid username or password."}
