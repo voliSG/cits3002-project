@@ -45,7 +45,11 @@ public class QBServer {
 
     private void loadEndpoints() {
         server.createContext("/api/hello", (exchange -> {
-            String respText = "Hello!\n";
+
+            // manually creating a json string
+            String respText = "{\n\t\"message\": \"Hello!\"\n}";
+
+            exchange.getResponseHeaders().set("Content-Type", "application/json");
             exchange.sendResponseHeaders(200, respText.getBytes().length);
             OutputStream output = exchange.getResponseBody();
             output.write(respText.getBytes());
@@ -59,17 +63,9 @@ public class QBServer {
         // Endpoint for fetching questions from the Questions Bank arrays, based on the
         // query parameter, numQuestions, which indicates how many questions should be
         // fetched.
-        server.createContext("/api/questions", (exchange -> {
-            String respText = "";
+        server.createContext("/api/getQuestions", (exchange -> {
+            String respText = "{\n\t\"questions\": [\n";
             int numQuestions = Integer.parseInt(exchange.getRequestURI().getQuery().split("=")[1]);
-
-            // "%k" will separate id from question, while "%e" will separate each
-            // id-question pair from each other
-
-            // storing a numQuestion random numbers between 1 to numQuestions into an int
-            // array
-            // this is done to ensure that the questions are chosen randomly and not
-            // repeated
             int[] randomNumbers = new int[numQuestions];
             for (int i = 0; i < numQuestions; i++) {
                 randomNumbers[i] = (int) (Math.random() * questionBank.length);
@@ -82,8 +78,19 @@ public class QBServer {
             }
 
             for (int i = 0; i < numQuestions; i++) {
-                respText += Integer.toString(i) + " %k " + questionBank[randomNumbers[i]].question + " %e";
+                // respText += Integer.toString(i) + " %k " +
+                // questionBank[randomNumbers[i]].question + " %e";
+                respText += "\t\t{\n\t\t\t\"id\": " + randomNumbers[i] + ",\n\t\t\t\"question\": \""
+                        + questionBank[randomNumbers[i]].question.replace("\n", "\\n") + "\"\n\t\t}";
+                if (i != numQuestions - 1) {
+                    respText += ",\n";
+                } else {
+                    respText += "\n\t]";
+                }
             }
+
+            respText += "\n}";
+
             exchange.sendResponseHeaders(200, respText.getBytes().length);
             OutputStream output = exchange.getResponseBody();
             output.write(respText.getBytes());

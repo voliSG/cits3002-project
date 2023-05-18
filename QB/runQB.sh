@@ -1,1 +1,1 @@
-javac -d bin ./*.java; java -cp bin QBServer 8001 c & java -cp bin QBServer 8002 python
+javac QBServer.java; java QBServer 8001 c & java QBServer 8002 python
