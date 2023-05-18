@@ -1,11 +1,10 @@
 import json
-
 from urllib.parse import urlencode
 from urllib.request import Request, urlopen
 
 from app import users
-from app.api.helpers import protected, find
-from app.config import qb_python, qb_c
+from app.api.helpers import find, protected
+from app.config import qb_c, qb_python
 from app.pages.quiz import MAX_ATTEMPTS
 
 

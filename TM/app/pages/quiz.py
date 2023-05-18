@@ -1,13 +1,11 @@
-from app.pages.helpers import load_template, replace_nth
-from app import users
-from app.config import qb_python, qb_c
-from app.api.helpers import protected, decode_token
-from app.pages.helpers import get_question_distribution
-from http.cookies import SimpleCookie
-from app import users
-import urllib.request
 import json
+import urllib.request
+from http.cookies import SimpleCookie
 
+from app import users
+from app.api.helpers import decode_token, protected
+from app.config import qb_c, qb_python
+from app.pages.helpers import get_question_distribution, load_template, replace_nth
 
 MAX_ATTEMPTS = 3
 

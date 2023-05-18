@@ -36,10 +36,10 @@ users = [
             {
                 "id": "3",
                 "language": "python",
-                "question": "Write a python program that prints \"Hello world!\"\n",
+                "question": 'Write a python program that prints "Hello world!"\n',
                 "type": "code",
                 "attempts": 0,
-                "current_answer": "print(\"Hello world!\")",
+                "current_answer": 'print("Hello world!")',
                 "correct": False,
             },
         ],

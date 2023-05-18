@@ -1,6 +1,6 @@
 import os
-import re
 import random
+import re
 
 from app.config import template_folder
 
