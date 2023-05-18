@@ -4,6 +4,12 @@ import pathlib
 
 from .. import users
 
+def find(list, key, value):
+    for i, dic in enumerate(list):
+        if dic[key] == value:
+            return i
+    return -1
+
 
 def decode_token(token):
     """

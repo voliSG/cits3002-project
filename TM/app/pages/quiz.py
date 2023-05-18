@@ -1,5 +1,6 @@
 from app.api.helpers import protected
 from app.pages.helpers import load_template, replace_nth
+from app import users
 
 MAX_ATTEMPTS = 3
 
@@ -10,45 +11,16 @@ MC_MAP = {
     "d": 4,
 }
 
-# mock data from user db
-questions = [
-    {
-        "id": "0",
-        "language": "python",
-        "question": "What is the difference between a list and a tuple?\n a) Lists are immutable, tuples are mutable\n b) Lists are mutable, tuples are immutable\n c) Lists can store any data type while tuples are for integers only \n d) There is no difference\n",
-        "type": "mc",
-        "attempts": 1,
-        "current_answer": "c",
-        "correct": False,
-    },
-    {
-        "id": "1",
-        "language": "python",
-        "question": "Write a program to print the first 10 numbers of the fibonacci sequence\n",
-        "type": "code",
-        "attempts": 1,
-        "current_answer": "print('hello')",
-        "correct": False,
-    },
-    {
-        "id": "2",
-        "language": "c",
-        "question": "What is a pointer?\n a) A pointer is a variable that stores the address of another variable\n b) A pointer is a variable that stores the value of another variable\n c) A pointer is a variable that stores the address of a function\n d) A pointer is a variable that stores the value of a function\n",
-        "type": "mc",
-        "attempts": 3,
-        "current_answer": "a",
-        "correct": True,
-    },
-]
-
 
 @protected
 def GET_quiz(query, token=None, username=None):
     status = 200
     template = load_template("quiz.html")
 
+    user = next((user for user in users if user["username"] == username), None)
+
     questions_html = ""
-    for i, q in enumerate(questions):
+    for i, q in enumerate(user["questions"]):
         # the question and answer template
         qa_html = ""
 

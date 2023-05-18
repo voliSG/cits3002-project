@@ -1,9 +1,13 @@
 // Reference used to implement QB: 
 // Setting up a REST API in pure Java: https://medium.com/consulner/framework-less-rest-api-in-java-dd22d4d642fa
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
+import java.nio.Buffer;
 
 import com.sun.net.httpserver.HttpServer;
 
@@ -94,7 +98,28 @@ public class QBServer {
         // a question is correct
         // Takes question id and user response parameters
         server.createContext("/api/questions/check", (exchange -> {
-            String[] params = exchange.getRequestURI().getQuery().split("&");
+            // String query = exchange.getRequestURI().getQuery();
+            // System.out.println("Hello" + query);
+            // String[] params = query.split("&");
+            System.out.println("Checking question");
+
+            InputStreamReader isr = new InputStreamReader(exchange.getRequestBody(), "utf-8");
+            BufferedReader br = new BufferedReader(isr);
+
+            int b;
+            StringBuilder buf = new StringBuilder();
+            while ((b = br.read()) != -1) {
+                buf.append((char) b);
+            }
+
+            br.close();
+            isr.close();
+
+            String body = buf.toString();
+
+            System.out.println(body);
+
+            String[] params = body.split("&");
 
             // get question id (first param)
             // ! this isn't working for some reason
@@ -104,7 +129,7 @@ public class QBServer {
             String answer = params[1].split("=")[1];
 
             // init responseBool which holds if question is correct or incorrect
-            String response = "";
+            String response = "false";
 
             System.out.println("Question ID: " + qId);
 
@@ -117,7 +142,7 @@ public class QBServer {
                     answer = runner.run(answer);
                 } catch (BadCodeException e) {
                     // terminate early if code is bad
-                    response = "{ \"correct\": false }";
+                    response = "false";
                     exchange.sendResponseHeaders(200, response.getBytes().length);
                     exchange.sendResponseHeaders(200, response.getBytes().length);
                     OutputStream output = exchange.getResponseBody();
@@ -134,9 +159,7 @@ public class QBServer {
             String expectedAnswer = question.answer;
 
             if (answer.equals(expectedAnswer)) {
-                response = "{ \"correct\": true }";
-            } else {
-                response = "{ \"correct\": false }";
+                response = "true";
             }
 
             exchange.sendResponseHeaders(200, response.getBytes().length);

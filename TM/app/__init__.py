@@ -17,4 +17,4 @@ def exit_handler():
         pickle.dump(users, pfile, protocol=pickle.HIGHEST_PROTOCOL)
 
 
-atexit.register(exit_handler)
+# atexit.register(exit_handler)

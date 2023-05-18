@@ -54,19 +54,8 @@
           body: JSON.stringify({ qId, answer }),
         });
 
-        console.log(document.cookie);
-
         if (response.ok) {
-          // TODO check the response
-          console.log(response.body);
-          if (response.body.correct) {
-            // TODO show the user that they got it right
-            console.log("Correct!");
-          } else {
-            // TODO show the user that they got it wrong
-            console.log("Incorrect!");
-          }
-          console.log("Answer submitted successfully!");
+          window.location.reload();
         } else {
           console.error("Something went wrong!");
         }

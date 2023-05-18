@@ -4,7 +4,7 @@ from urllib.parse import urlencode
 from urllib.request import Request, urlopen
 
 from app import users
-from app.api.helpers import protected
+from app.api.helpers import protected, find
 from app.config import qb_python, qb_c
 from app.pages.quiz import MAX_ATTEMPTS
 
@@ -21,25 +21,25 @@ def POST_answer(query, body, **kwargs):
     q_id = body.get("qId")
     answer = body.get("answer")
 
-    # * temp default
+    # ! this is broken and i don't know how to fix it
     username = kwargs.get("username", "123")
 
-    user = next((user for user in users if user["username"] == username), None)
+    # do it this dumb way just in case it's not passing by reference
+    user_index = find(users, "username", username)
 
-    print(user)
-    if not user:
+    if user_index == -1:
         status = 400
         response = {"error": "User not found. Somehow..."}
         return status, json.dumps(response), {}
+    
+    question_index = find(users[user_index]["questions"], "id", q_id)
 
-    question = next(
-        (question for question in user["questions"] if question["id"] == q_id), None
-    )
-
-    if not question:
+    if question_index == -1:
         status = 400
         response = {"error": "Question not found."}
         return status, json.dumps(response), {}
+    
+    question = users[user_index]["questions"][question_index]
 
     if question["attempts"] >= MAX_ATTEMPTS:
         status = 400
@@ -55,8 +55,6 @@ def POST_answer(query, body, **kwargs):
 
     data = urlencode({"qId": q_id, "answer": answer}).encode()
 
-    print(data)
-
     req = Request(
         f"{qb}/api/questions/check",
         data=data,
@@ -64,12 +62,14 @@ def POST_answer(query, body, **kwargs):
     )
     res = urlopen(req).read().decode()
 
-    if res == "false":
-        status = 400
-        response = {"correct": False}
-        return status, json.dumps(response), {}
-    if user:
-        user["attempts"] += 1
+    question["attempts"] += 1
+    question["correct"] = res == "true"
+    question["current_answer"] = answer
 
-    response = {"correct": True}
+    if res == "false":
+        response = {"correct": False}
+    else:
+        response = {"correct": True}
+
+
     return status, json.dumps(response), {}
