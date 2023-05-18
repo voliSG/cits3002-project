@@ -1,5 +1,8 @@
+from app.pages.helpers import load_template, replace_nth
+from app import users
+from app.config import qb_python, qb_c
 from app.api.helpers import protected, decode_token
-from app.pages.helpers import *
+from app.pages.helpers import get_question_distribution
 from http.cookies import SimpleCookie
 from app import users
 import urllib.request
@@ -15,44 +18,10 @@ MC_MAP = {
     "d": 4,
 }
 
-# mock data from user db
-# questions = [
-#     {
-#         "id": "0",
-#         "language": "python",
-#         "question": "What is the difference between a list and a tuple?\n a) Lists are immutable, tuples are mutable\n b) Lists are mutable, tuples are immutable\n c) Lists can store any data type while tuples are for integers only \n d) There is no difference\n",
-#         "type": "mc",
-#         "attempts": 1,
-#         "current_answer": "c",
-#         "correct": False,
-#     },
-#     {
-#         "id": "1",
-#         "language": "python",
-#         "question": "Write a program to print the first 10 numbers of the fibonacci sequence\n",
-#         "type": "code",
-#         "attempts": 1,
-#         "current_answer": "print('hello')",
-#         "correct": False,
-#     },
-#     {
-#         "id": "2",
-#         "language": "c",
-#         "question": "What is a pointer?\n a) A pointer is a variable that stores the address of another variable\n b) A pointer is a variable that stores the value of another variable\n c) A pointer is a variable that stores the address of a function\n d) A pointer is a variable that stores the value of a function\n",
-#         "type": "mc",
-#         "attempts": 3,
-#         "current_answer": "a",
-#         "correct": True,
-#     },
-# ]
-
 # Questions fetched from QB will be stored in this dictionary, with the username of the user as the key
 questions = {}
 
 NUM_QUESTIONS_PER_QUIZ = 4
-ADDRESS_FOR_PYTHON_QB = "http://localhost:8001"
-ADDRESS_FOR_C_QB = "http://localhost:8002"
-
 
 # def fetch_questions(url, num_questions):
 
@@ -99,7 +68,7 @@ def fetch_questions(url, num_questions):
         for question in questionData:
             print(question)
 
-        return questionData['questions']
+        return questionData["questions"]
 
     except urllib.error.URLError as e:
         print("An error occurred:", e)
@@ -107,15 +76,14 @@ def fetch_questions(url, num_questions):
 
 def updateQuestionsSchema(questions):
     for question in questions:
-        question['attempts'] = 0
-        question['correct'] = False
+        question["attempts"] = 0
+        question["correct"] = False
 
     return questions
 
 
 @protected
-def GET_quiz(query, token=None):
-
+def GET_quiz(query, token=None, username=None):
     # # get auth token from cookie
     # cookies = SimpleCookie(self.headers.get("Cookie"))
     # token_cookie = cookies.get("token")
@@ -129,9 +97,9 @@ def GET_quiz(query, token=None):
 
         # # fetch questions
         questions_py = fetch_questions(
-            ADDRESS_FOR_PYTHON_QB + "/api/getQuestions?numQs=", num_python)
-        questions_c = fetch_questions(
-            ADDRESS_FOR_C_QB + "/api/getQuestions?numQs=", num_c)
+            qb_python + "/api/getQuestions?numQs=", num_python
+        )
+        questions_c = fetch_questions(qb_c + "/api/getQuestions?numQs=", num_c)
         updateQuestionsSchema(questions_py)
         updateQuestionsSchema(questions_c)
         questions[username] = questions_py + questions_c
@@ -164,8 +132,7 @@ def GET_quiz(query, token=None):
 
         qa_html = qa_html.replace("{%QUESTION%}", q_html)
         qa_html = qa_html.replace("{%ID%}", str(q["id"]))
-        qa_html = qa_html.replace(
-            "{%ATTEMPTS%}", f"{q['attempts']}/{MAX_ATTEMPTS}")
+        qa_html = qa_html.replace("{%ATTEMPTS%}", f"{q['attempts']}/{MAX_ATTEMPTS}")
 
         # check or fill in their latest answer
         if q["id"] == 0 or q["id"] == 1:
@@ -176,8 +143,7 @@ def GET_quiz(query, token=None):
                 MC_MAP.get(q.get("current_answer"), -1),
             )
         else:
-            qa_html = qa_html.replace(
-                "{%CURRENT_ANSWER%}", q.get("current_answer", ""))
+            qa_html = qa_html.replace("{%CURRENT_ANSWER%}", q.get("current_answer", ""))
 
         # if correct, disable the question and colour it green
         if q["correct"]:

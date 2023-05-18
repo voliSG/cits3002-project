@@ -1,83 +1,49 @@
 // Reference used to implement QB: 
 // Setting up a REST API in pure Java: https://medium.com/consulner/framework-less-rest-api-in-java-dd22d4d642fa
-//
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
+import java.net.URLDecoder;
 
 import com.sun.net.httpserver.HttpServer;
 
-public class QBServer {
-    // an object called QApair that stores two string values, a question and an
-    // answer
-    static class QApair {
-        String question;
-        String answer;
+import banks.CBank;
+import banks.PythonBank;
+import banks.QAPair;
+import enums.Language;
+import enums.QuestionType;
+import exceptions.BadCodeException;
 
-        public QApair(String question, String answer) {
-            this.question = question;
-            this.answer = answer;
-        }
+public class QBServer {
+    private static final int NUM_QUESTIONS = 4;
+
+    private HttpServer server;
+    private int serverPort;
+    private Language language;
+    private QBCodeRunner runner;
+
+    QAPair[] questionBank;
+
+    public QBServer(Language language, int serverPort) throws IOException {
+        this.language = language;
+        this.serverPort = serverPort;
+
+        questionBank = language == Language.PYTHON ? PythonBank.questions : CBank.questions;
     }
 
-    // Configuration variables
-    private static final int NUM_QUESTIONS = 4;
-    // Array of QApairs that will be used to store the python questions and answers
-    private static QApair[] PythonQuestionBank = {
-            new QApair(
-                    "What is the difference between a list and a tuple?\n a) Lists are immutable, tuples are mutable\n b) Lists are mutable, tuples are immutable\n c) Lists can store any data type while tuples are for integers only \n d) There is no difference",
-                    "Lists are mutable, tuples are immutable"),
-            new QApair(
-                    "What is the order of precedence in python?\n a) Exponential, Parentheses, Multiplication, Division, Addition, Subtraction\n b) Exponential, Parentheses, Division, Multiplication, Addition, Subtraction\n c) Parentheses, Exponential, Multiplication, Division, Subtraction, Addition\n d) Parentheses, Exponential, Multiplication, Division, Addition, Subtraction",
-                    "d) Parentheses, Exponential, Multiplication, Division, Addition, Subtraction"),
-            new QApair(
-                    "Write a program to print the first 10 numbers of the fibonacci sequence",
-                    "a = 0\nb = 1\nfor i in range(10):\n\tprint(a)\n\tc = a + b\n\ta = b\n\tb = c"),
-            new QApair("Write a function named lcm to find the LCM of two numbers",
-                    "def lcm(a, b):\n\tif a > b:\n\t\tgreater = a\n\telse:\n\t\tgreater = b\n\twhile(True):\n\t\tif((greater % a == 0) and (greater % b == 0)):\n\t\t\tlcm = greater\n\t\t\tbreak\n\t\tgreater += 1\n\treturn lcm")
-    };
+    public void start() throws IOException {
+        server = HttpServer.create(new InetSocketAddress(serverPort), 0);
+        runner = new QBCodeRunner(language, 5);
+        loadEndpoints();
 
-    // Array of QApairs that will be used to store the C questions and answers
-    private static QApair[] CQuestionBank = {
-            new QApair(
-                    "What is a pointer?\n a) A pointer is a variable that stores the address of another variable\n b) A pointer is a variable that stores the value of another variable\n c) A pointer is a variable that stores the address of a function\n d) A pointer is a variable that stores the value of a function",
-                    "a) A pointer is a variable that stores the address of another variable"),
-            new QApair(
-                    "What is memory allocation in C?\n a) Memory allocation is the process of reserving a partial or complete portion of computer memory for the execution of programs and processes\n b) Memory allocation is the process of reserving a partial or complete portion of computer memory for the storage of data\n c) Memory allocation is the process of reserving a partial or complete portion of computer memory for the storage of programs and processes\n d) Memory allocation is the process of reserving a partial or complete portion of computer memory for the execution of data",
-                    "a) Memory allocation is the process of reserving a partial or complete portion of computer memory for the execution of programs and processes"),
-            new QApair(
-                    "Write a function named isEven to check if a number is even or odd",
-                    "int isEven(int n) {\n\tif (n % 2 == 0)\n\t\treturn 1;\n\telse\n\t\treturn 0;\n}"),
-            new QApair(
-                    "Write a function named isPrime to check if a number is prime or not",
-                    "int isPrime(int n) {\n\tint i;\n\tfor (i = 2; i <= n / 2; ++i) {\n\t\tif (n % i == 0) {\n\t\t\treturn 0;\n\t\t}\n\t}\n\treturn 1;\n}")
-    };
+        server.setExecutor(null); // creates a default executor
+        server.start();
+    }
 
-    public static void main(String[] args) throws IOException {
-        if (args.length != 2) {
-            System.out.println("Usage: java QBserver <port> <language [python/c]>");
-            System.exit(1);
-        } else {
-            if (!args[1].equals("python") && !args[1].equals("c")) {
-                System.out.println("Usage: java QBserver <port> <language [python/c]>");
-                System.out.println("Language must be either python or c");
-                System.exit(1);
-            }
-        }
-
-        // parsing string to int from argument
-        int serverPort = Integer.parseInt(args[0]);
-        HttpServer server = HttpServer.create(new InetSocketAddress(serverPort), 0);
-
-        // A variable to store which bank of questions to use based on whether the input
-        // is python or c
-        QApair[] questionBank = args[1].equals("python") ? PythonQuestionBank : CQuestionBank;
-
-        String logPrefix = "[QBserver - " + args[1] + "] ";
-
-        // Simple endpoint for testing if the server is running and for references
-        // purposes. We can remove it later
+    private void loadEndpoints() {
         server.createContext("/api/hello", (exchange -> {
 
             // manually creating a json string
@@ -90,6 +56,9 @@ public class QBServer {
             output.flush();
             exchange.close();
         }));
+
+        // Simple endpoint for testing if the server is running and for references
+        // purposes. We can remove it later
 
         // Endpoint for fetching questions from the Questions Bank arrays, based on the
         // query parameter, numQuestions, which indicates how many questions should be
@@ -127,10 +96,104 @@ public class QBServer {
             output.write(respText.getBytes());
             output.flush();
             exchange.close();
-            System.out.println(logPrefix + "Sent " + numQuestions + " questions to client!");
+            System.out.println(
+                    "[QBserver - " + language.toString() + "]" + "Sent " + numQuestions + " questions to client!");
         }));
 
-        server.setExecutor(null); // creates a default executor
+        // Endpoint that returns a boolean based on if the user's response to
+        // a question is correct
+        // Takes question id and user response parameters
+        server.createContext("/api/questions/check", (exchange -> {
+            // String query = exchange.getRequestURI().getQuery();
+            // System.out.println("Hello" + query);
+            // String[] params = query.split("&");
+            System.out.println("Checking question");
+
+            InputStreamReader isr = new InputStreamReader(exchange.getRequestBody(), "utf-8");
+            BufferedReader br = new BufferedReader(isr);
+
+            int b;
+            StringBuilder buf = new StringBuilder();
+            while ((b = br.read()) != -1) {
+                buf.append((char) b);
+            }
+
+            br.close();
+            isr.close();
+
+            String body = buf.toString();
+
+            System.out.println(body);
+
+            String[] params = body.split("&");
+
+            // get question id (first param)
+            int qId = Integer.parseInt(params[0].split("=")[1]);
+
+            // get user answer (second param)
+            String answer = URLDecoder.decode(params[1].split("=")[1], "UTF-8");
+
+            // init responseBool which holds if question is correct or incorrect
+            String response = "false";
+
+            System.out.println("Question ID: " + qId);
+
+            QAPair question = questionBank[qId];
+
+            // if question requires code input, run code and save output as user_answer
+            if (question.type == QuestionType.CODE) {
+                System.out.println("Code question");
+                try {
+                    System.out.println(answer);
+                    answer = runner.run(answer);
+                } catch (BadCodeException e) {
+                    // terminate early if code is bad
+                    response = "false";
+                    exchange.sendResponseHeaders(200, response.getBytes().length);
+                    exchange.sendResponseHeaders(200, response.getBytes().length);
+                    OutputStream output = exchange.getResponseBody();
+                    output.write(response.getBytes());
+                    output.flush();
+                    exchange.close();
+                    return;
+                } catch (IOException | InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            // retreive expected answer (mcq)
+            String expectedAnswer = question.answer;
+
+            if (answer.equals(expectedAnswer)) {
+                response = "true";
+            }
+
+            exchange.sendResponseHeaders(200, response.getBytes().length);
+            OutputStream output = exchange.getResponseBody();
+            output.write(response.getBytes());
+            output.flush();
+            exchange.close();
+            System.out.println("Response Correct?: " + response);
+        }));
+    }
+
+    public static void main(String[] args) throws IOException {
+        if (args.length != 2) {
+            System.out.println("Usage: java QBserver <port> <language [python/c]>");
+            System.exit(1);
+        } else {
+            if (!args[1].equals("python") && !args[1].equals("c")) {
+                System.out.println("Usage: java QBserver <port> <language [python/c]>");
+                System.out.println("Language must be either python or c");
+                System.exit(1);
+            }
+        }
+
+        int serverPort = Integer.parseInt(args[0]);
+        Language language = args[1].equals("c") ? Language.C : Language.PYTHON;
+
+        QBServer server = new QBServer(language, serverPort);
+
         server.start();
 
         System.out.println("QB Server running on localhost:" + serverPort + "\n");

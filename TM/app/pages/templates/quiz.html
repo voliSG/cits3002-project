@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
   <meta charset="UTF-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
@@ -10,7 +9,7 @@
   <title>Test Taker - Home</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script type="text/javascript">
-    function submitAnswer(id) {
+    async function submitAnswer(id) {
       // gives the question number
       const qId = id.split("-")[0];
 
@@ -36,15 +35,24 @@
         answer = a.value;
       }
 
-      if (!answer) {
-        console.error("Something went seriously wrong...");
-        return;
+        // query the TM, which then queries the QB to check the answer
+        const response = await fetch("/api/answer", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ qId, answer }),
+        });
+
+        if (response.ok) {
+          window.location.reload();
+        } else {
+          console.error("Something went wrong!");
+        }
       }
 
       console.log(`Answer (${type}): ${answer}`);
-
-      // TODO query the TM, which then queries the QB to check the answer
-    }
+    
   </script>
 </head>
 

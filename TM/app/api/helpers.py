@@ -1,8 +1,13 @@
 import base64
-import os
-import pathlib
 
 from .. import users
+
+
+def find(list, key, value):
+    for i, dic in enumerate(list):
+        if dic[key] == value:
+            return i
+    return -1
 
 
 def decode_token(token):
@@ -73,6 +78,6 @@ def protected(func):
             template = "Error 400: Bad Request"
             return status, template, headers
 
-        return func(args)
+        return func(*args, **kwargs, username=username)
 
     return wrapper_protected

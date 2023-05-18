@@ -8,10 +8,12 @@ from app.routes import api_folder, api_routes, page_routes
 
 
 class TMServer(Thread):
-    def __init__(self, host, port):
+    def __init__(self, host, port, qb_python, qb_c):
         super().__init__()
         self.host = host
         self.port = port
+        self.qb_python = qb_python
+        self.qb_c = qb_c
         self.ws = HTTPServer((self.host, self.port), TMHandler)
 
     def run(self):
@@ -106,7 +108,12 @@ class TMHandler(BaseHTTPRequestHandler):
 
         content_length = int(self.headers["Content-Length"])
         post_data = self.rfile.read(content_length).decode("utf-8")
-        payload = json.loads(post_data)
+        body = json.loads(post_data)
+
+        # get auth token from cookie
+        cookies = SimpleCookie(self.headers.get("Cookie"))
+        token_cookie = cookies.get("token")
+        token = token_cookie.value if token_cookie is not None else None
 
         api_route = api_routes.get(path)
 
@@ -130,7 +137,7 @@ class TMHandler(BaseHTTPRequestHandler):
             )
             return
 
-        (status, content, headers) = api_action(query, payload)
+        (status, content, headers) = api_action(query, body, token=token)
 
         self.__set_response(
             status, content, {"Content-Type": "application/json", **headers}
