@@ -95,8 +95,10 @@ public class QBServer {
         // Takes question id and user response parameters
         server.createContext("/api/questions/check", (exchange -> {
             String[] params = exchange.getRequestURI().getQuery().split("&");
+
             // get question id (first param)
-            int qid = Integer.parseInt(params[0].split("=")[1]);
+            // ! this isn't working for some reason
+            int qId = Integer.parseInt(params[0].split("=")[1]);
 
             // get user answer (second param)
             String answer = params[1].split("=")[1];
@@ -104,7 +106,9 @@ public class QBServer {
             // init responseBool which holds if question is correct or incorrect
             String response = "";
 
-            QAPair question = questionBank[qid];
+            System.out.println("Question ID: " + qId);
+
+            QAPair question = questionBank[qId];
 
             // if question requires code input, run code and save output as user_answer
             if (question.type == QuestionType.CODE) {
@@ -131,6 +135,8 @@ public class QBServer {
 
             if (answer.equals(expectedAnswer)) {
                 response = "{ \"correct\": true }";
+            } else {
+                response = "{ \"correct\": false }";
             }
 
             exchange.sendResponseHeaders(200, response.getBytes().length);
