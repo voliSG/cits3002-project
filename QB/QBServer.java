@@ -3,11 +3,10 @@
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
-import java.nio.Buffer;
+import java.net.URLDecoder;
 
 import com.sun.net.httpserver.HttpServer;
 
@@ -122,11 +121,10 @@ public class QBServer {
             String[] params = body.split("&");
 
             // get question id (first param)
-            // ! this isn't working for some reason
             int qId = Integer.parseInt(params[0].split("=")[1]);
 
             // get user answer (second param)
-            String answer = params[1].split("=")[1];
+            String answer = URLDecoder.decode(params[1].split("=")[1], "UTF-8");
 
             // init responseBool which holds if question is correct or incorrect
             String response = "false";
@@ -139,6 +137,7 @@ public class QBServer {
             if (question.type == QuestionType.CODE) {
                 System.out.println("Code question");
                 try {
+                    System.out.println(answer);
                     answer = runner.run(answer);
                 } catch (BadCodeException e) {
                     // terminate early if code is bad
@@ -169,7 +168,6 @@ public class QBServer {
             exchange.close();
             System.out.println("Response Correct?: " + response);
         }));
-
     }
 
     public static void main(String[] args) throws IOException {

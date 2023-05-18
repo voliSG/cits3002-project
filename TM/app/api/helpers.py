@@ -1,6 +1,4 @@
 import base64
-import os
-import pathlib
 
 from .. import users
 
