@@ -5,6 +5,7 @@ from urllib.request import Request, urlopen
 from app import users
 from app.api.helpers import find, protected
 from app.config import qb_c, qb_python
+from app.enums import Language
 from app.pages.quiz import MAX_ATTEMPTS
 
 
@@ -48,9 +49,9 @@ def POST_answer(query, body, **kwargs):
 
     qb = ""
 
-    if question["language"] == "python":
+    if question["language"] == Language.PYTHON:
         qb = qb_python
-    elif question["language"] == "c":
+    elif question["language"] == Language.C:
         qb = qb_c
 
     data = urlencode({"qId": q_id, "answer": answer}).encode()
