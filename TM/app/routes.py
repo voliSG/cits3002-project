@@ -18,9 +18,6 @@ api_routes = {
     f"/{api_folder}/login": {
         "POST": api.login.POST_login,
     },
-    f"/{api_folder}/test": {
-        "GET": api.quiz.GET_questions,
-    },
     f"/{api_folder}/answer": {
         "POST": api.quiz.POST_answer,
     },

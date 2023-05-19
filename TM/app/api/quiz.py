@@ -3,17 +3,10 @@ from urllib.parse import urlencode
 from urllib.request import Request, urlopen
 
 from app import users
-from app.api.helpers import find, protected
+from app.api.helpers import decode_token, find, protected
 from app.config import qb_c, qb_python
 from app.enums import Language
 from app.pages.quiz import MAX_ATTEMPTS
-
-
-@protected
-def GET_questions(query, username, **kwargs):
-    status = 200
-    response = [{"question": "What is your name?"}, {"question": "What is your quest?"}]
-    return status, json.dumps(response)
 
 
 def POST_answer(query, body, **kwargs):
@@ -21,8 +14,7 @@ def POST_answer(query, body, **kwargs):
     q_id = body.get("qId")
     answer = body.get("answer")
 
-    # ! this is broken and i don't know how to fix it
-    username = kwargs.get("username", "123")
+    username = decode_token(kwargs["token"])[0]
 
     # do it this dumb way just in case it's not passing by reference
     user_index = find(users, "username", username)
@@ -32,8 +24,11 @@ def POST_answer(query, body, **kwargs):
         response = {"error": "User not found. Somehow..."}
         return status, json.dumps(response), {}
 
-    # ! something is broken
-    question_index = find(users[user_index]["questions"], "id", q_id)
+    questions = users[user_index]["questions"]
+    question_index = next(
+        (i for i, q in enumerate(questions) if q["id"] == int(q_id)), -1
+    )
+    print(question_index)
 
     if question_index == -1:
         status = 400
@@ -63,13 +58,15 @@ def POST_answer(query, body, **kwargs):
     )
     res = urlopen(req).read().decode()
 
-    question["attempts"] += 1
-    question["correct"] = res == "true"
-    question["current_answer"] = answer
-
     if res == "false":
         response = {"correct": False}
+        question["correct"] = False
     else:
         response = {"correct": True}
+        question["correct"] = True
+        users[user_index]["score"] += MAX_ATTEMPTS - question["attempts"]
+
+    question["current_answer"] = answer
+    question["attempts"] += 1
 
     return status, json.dumps(response), {}

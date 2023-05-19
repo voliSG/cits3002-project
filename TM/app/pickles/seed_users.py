@@ -6,21 +6,25 @@ users = [
         "username": "123",
         "password": "456",
         "questions": [],
+        "score": 0,
     },
     {
         "username": "1",
         "password": "1",
         "questions": [],
+        "score": 0,
     },
     {
         "username": "131415",
         "password": "161718",
         "questions": [],
+        "score": 0,
     },
     {
         "username": "192021",
         "password": "222324",
         "questions": [],
+        "score": 0,
     },
 ]
 
