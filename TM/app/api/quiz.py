@@ -9,13 +9,6 @@ from app.enums import Language
 from app.pages.quiz import MAX_ATTEMPTS
 
 
-@protected
-def GET_questions(query, username, **kwargs):
-    status = 200
-    response = [{"question": "What is your name?"}, {"question": "What is your quest?"}]
-    return status, json.dumps(response)
-
-
 def POST_answer(query, body, **kwargs):
     status = 200
     q_id = body.get("qId")
@@ -32,7 +25,9 @@ def POST_answer(query, body, **kwargs):
         return status, json.dumps(response), {}
 
     questions = users[user_index]["questions"]
-    question_index = next((i for i, q in enumerate(questions) if q["id"] == int(q_id)), -1)
+    question_index = next(
+        (i for i, q in enumerate(questions) if q["id"] == int(q_id)), -1
+    )
     print(question_index)
 
     if question_index == -1:
@@ -63,13 +58,15 @@ def POST_answer(query, body, **kwargs):
     )
     res = urlopen(req).read().decode()
 
-    question["attempts"] += 1
-    question["correct"] = res == "true"
-    question["current_answer"] = answer
-
     if res == "false":
         response = {"correct": False}
+        question["correct"] = False
     else:
         response = {"correct": True}
+        question["correct"] = True
+        users[user_index]["score"] += MAX_ATTEMPTS - question["attempts"]
+
+    question["current_answer"] = answer
+    question["attempts"] += 1
 
     return status, json.dumps(response), {}

@@ -89,12 +89,16 @@ def GET_quiz(query, token=None, username=None):
             if q["attempts"] >= MAX_ATTEMPTS:
                 qa_html = qa_html.replace("{%CORRECT%}", "bg-red-400")
                 qa_html = qa_html.replace("{%DISABLED%}", "disabled")
-                
+
                 # TODO fetch the correct answer from the db
                 if q["language"] == Language.PYTHON:
-                    sample_answer = fetch_sampleAnswer(qb_python + "/api/questions/sample?qId=", q["id"])
+                    sample_answer = fetch_sampleAnswer(
+                        qb_python + "/api/questions/sample?qId=", q["id"]
+                    )
                 else:
-                    sample_answer = fetch_sampleAnswer(qb_c + "/api/questions/sample?qId=", q["id"])
+                    sample_answer = fetch_sampleAnswer(
+                        qb_c + "/api/questions/sample?qId=", q["id"]
+                    )
 
                 qa_html = qa_html.replace("{%ANSWER%}", "Answer: " + sample_answer)
             else:
@@ -106,6 +110,11 @@ def GET_quiz(query, token=None, username=None):
         questions_html += qa_html
 
     template = template.replace("{%QUESTIONS%}", questions_html)
+    template = template.replace(
+        "{%SCORE%}", f"{user['score']}/{len(user['questions']) * MAX_ATTEMPTS}"
+    )
+
+    print(template)
     status = 200
     headers = {}
     return status, template, headers
