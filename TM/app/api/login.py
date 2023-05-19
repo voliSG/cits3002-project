@@ -36,11 +36,9 @@ def fetch_questions(url, num_questions):
         data = response.read()
 
         # Assuming the response data is in JSON format
-        # You can parse and process the data here
-        # For example:
         questionData = json.loads(data)
 
-        # Code to print the questions!
+        # Code to print the questions! (For testing purposes. Uncomment if needed.)
         # print(Fore.GREEN + "\nHere\'s the questions yo boi shall face" + Fore.YELLOW)
         # for question in questionData['questions']:
         #     print("\tQ: " + question['question'].replace("\n", "\n  \t"))
