@@ -17,11 +17,11 @@ public final class PythonBank {
                     QuestionType.CODE,
                     "Write a Python program to print the first 10 numbers of the fibonacci sequence\n",
                     "0\n1\n1\n2\n3\n5\n8\n13\n21\n34\n",
-                    "def fibonacci(n):\nif n == 0:\nreturn 0\nelif n == 1:\nreturn 1\nelse:\nreturn fibonacci(n - 1) + fibonacci(n - 2)"),
+                    "def fibonacci(n):\n\tif n == 0:\n\t\treturn 0\n\telif n == 1:\n\t\treturn 1\n\telse:\n\t\treturn fibonacci(n - 1) + fibonacci(n - 2)"),
             new QAPair(
                     QuestionType.CODE,
                     "Write a python program to print the sum of squares of an array of integers.\nThe initial values of the array are [2, 3, 4] and must be hard coded.",
                     "29\n",
-                    "def sum_of_squares(arr):\nsum = 0\nfor i in arr:\nsum += i ** 2\nreturn sum\n\nprint(sum_of_squares([2, 3, 4]))\n# Output: 29\n")
+                    "def sum_of_squares(arr):\n\tsum = 0\n\tfor i in arr:\n\t\tsum += i ** 2\n\treturn sum\n\nprint(sum_of_squares([2, 3, 4]))\n# Output: 29\n")
     };
 }
