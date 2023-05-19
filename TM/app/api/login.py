@@ -56,7 +56,6 @@ def fetch_questions(url, num_questions):
     except URLError as e:
         print(
             Fore.RED + "An error occurred while connecting to " + Fore.YELLOW + url + Fore.RED + " :\n", e.reason, Fore.WHITE)
-        return []
 
 
 def updateQuestionsSchema(questions, language):
