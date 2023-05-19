@@ -110,6 +110,11 @@ def GET_quiz(query, token=None, username=None):
         questions_html += qa_html
 
     template = template.replace("{%QUESTIONS%}", questions_html)
+    template = template.replace(
+        "{%SCORE%}", f"{user['score']}/{len(user['questions']) * MAX_ATTEMPTS}"
+    )
+
+    print(template)
     status = 200
     headers = {}
     return status, template, headers

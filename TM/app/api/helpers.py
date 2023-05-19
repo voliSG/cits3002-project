@@ -25,7 +25,7 @@ def is_new_login(user):
     """
     Checks if the user is logging in for the first time
     """
-    return len(user.get("questions")) > 0
+    return len(user.get("questions")) == 0
 
 
 def check_login(username, password):
