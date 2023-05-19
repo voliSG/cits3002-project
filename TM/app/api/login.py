@@ -1,6 +1,8 @@
 import base64
 import json
 import random
+import colorama
+from colorama import Fore
 from urllib.error import URLError
 from urllib.request import Request, urlopen
 
@@ -38,17 +40,23 @@ def fetch_questions(url, num_questions):
         # For example:
         questionData = json.loads(data)
 
-        # Print the questions
-        for question in questionData:
-            print(question)
+        # Code to print the questions!
+        # print(Fore.GREEN + "\nHere\'s the questions yo boi shall face" + Fore.YELLOW)
+        # for question in questionData['questions']:
+        #     print("\tQ: " + question['question'].replace("\n", "\n  \t"))
+        # print(Fore.WHITE)
 
+        if 'questions' not in questionData.keys():
+            return []
         return questionData["questions"]
 
     except json.JSONDecodeError:
         # all python or all c questions
         return []
     except URLError as e:
-        print("An error occurred:", e)
+        print(
+            Fore.RED + "An error occurred while connecting to " + Fore.YELLOW + url + Fore.RED + " :\n", e.reason, Fore.WHITE)
+        return []
 
 
 def updateQuestionsSchema(questions, language):
@@ -84,7 +92,8 @@ def POST_login(query, body, **kwargs):
             print("New login!")
 
             # randomise question distribution
-            num_python, num_c = get_question_distribution(NUM_QUESTIONS_PER_QUIZ)
+            num_python, num_c = get_question_distribution(
+                NUM_QUESTIONS_PER_QUIZ)
 
             # fetch questions
             questions_py = fetch_questions(
