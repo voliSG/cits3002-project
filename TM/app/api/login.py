@@ -88,7 +88,8 @@ def POST_login(query, body, **kwargs):
         response = {"message": "Login successful.", "token": token}
 
         if not is_new:
-            print("New login!")
+            print(
+                Fore.GREEN + "[TM] Voila! A new user has logged in for the first time!" + Fore.WHITE)
 
             # randomise question distribution
             num_python, num_c = get_question_distribution(
@@ -104,6 +105,8 @@ def POST_login(query, body, **kwargs):
 
             updateQuestionsSchema(questions_py, Language.PYTHON)
             updateQuestionsSchema(questions_c, Language.C)
+            print(Fore.GREEN + "[TM] Questions have been fetched from the question bank! Fetched " + Fore.YELLOW + str(num_c) +
+                  Fore.GREEN + " C questions and " + Fore.YELLOW + str(num_python) + Fore.GREEN + " Python questions." + Fore.WHITE)
 
             user = next(u for u in users if u["username"] == username)
 
