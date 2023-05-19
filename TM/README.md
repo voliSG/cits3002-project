@@ -2,40 +2,20 @@
 
 Simple web server from scratch written in python
 
-## Setup (Development)
+### Notes
+- Developed with Python 3.10.6
 
-### Initialise the Virtual Environment
+## Setup
 
-```bash
-python3 -m venv venv
-```
+- Set the IP addresses and port of the QB servers in the `app/config.py` file.
 
-### Activate the Virtual Environment
-
-On Unix:
+## Run the TM Server
 
 ```bash
-source venv/bin/activate
+python3 main.py
 ```
 
-On Windows:
-
-```bash
-.\venv\Scripts\activate.bat # CMD
-.\venv\Scripts\Activate.ps1 # Powershell
-```
-
-### Install Dependencies
-  
-```bash
-pip install -r requirements.txt
-```
-
-## Run the Server
-
-```bash
-python main.py
-```
+If that doesn't work, try `python main.py`
 
 ## Architecture
 
