@@ -85,9 +85,8 @@ def POST_login(query, body, **kwargs):
         token = base64.b64encode(auth_bytes).decode("ascii")
         response = {"message": "Login successful.", "token": token}
 
-        if not is_new:
-            print(
-                Fore.GREEN + "[TM] Voila! A new user has logged in for the first time!" + Fore.WHITE)
+        if is_new:
+            print("New login!")
 
             # randomise question distribution
             num_python, num_c = get_question_distribution(
@@ -97,7 +96,8 @@ def POST_login(query, body, **kwargs):
             questions_py = fetch_questions(
                 qb_python + "/api/getQuestions?numQs=", num_python
             )
-            questions_c = fetch_questions(qb_c + "/api/getQuestions?numQs=", num_c)
+            questions_c = fetch_questions(
+                qb_c + "/api/getQuestions?numQs=", num_c)
 
             updateQuestionsSchema(questions_py, Language.PYTHON)
             updateQuestionsSchema(questions_c, Language.C)
