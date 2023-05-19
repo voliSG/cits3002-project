@@ -31,7 +31,8 @@ def fetch_sampleAnswer(url, qId):
         # Read the response content
         data = response.read()
 
-        print(data)
+        # Convert from byte stream to string
+        data = data.decode("utf-8")
 
         return data
 
@@ -95,7 +96,7 @@ def GET_quiz(query, token=None, username=None):
                 else:
                     sample_answer = fetch_sampleAnswer(qb_c + "/api/questions/sample?qId=", q["id"])
 
-                qa_html = qa_html.replace("{%ANSWER%}", sample_answer)
+                qa_html = qa_html.replace("{%ANSWER%}", "Answer: " + sample_answer)
             else:
                 # cleanup
                 qa_html = qa_html.replace("{%CORRECT%}", "")
