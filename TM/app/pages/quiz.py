@@ -1,4 +1,9 @@
+from urllib.error import URLError
+from urllib.request import Request, urlopen
+
 from app import users
+from app.enums import Language
+from app.config import qb_c, qb_python
 from app.api.helpers import protected
 from app.pages.helpers import load_template, replace_nth
 
@@ -10,6 +15,29 @@ MC_MAP = {
     "c": 3,
     "d": 4,
 }
+
+
+# Fetches sample answer from QB endpoint
+def fetch_sampleAnswer(url, qId):
+    # append qid to url as param
+    url += str(qId)
+    # Create a request object with the URL
+    request = Request(url)
+
+    try:
+        # Send the request and get the response
+        response = urlopen(request)
+
+        # Read the response content
+        data = response.read()
+
+        # Convert from byte stream to string
+        data = data.decode("utf-8")
+
+        return data
+
+    except URLError as e:
+        print("An error occurred:", e)
 
 
 @protected
@@ -61,8 +89,14 @@ def GET_quiz(query, token=None, username=None):
             if q["attempts"] >= MAX_ATTEMPTS:
                 qa_html = qa_html.replace("{%CORRECT%}", "bg-red-400")
                 qa_html = qa_html.replace("{%DISABLED%}", "disabled")
+                
                 # TODO fetch the correct answer from the db
-                qa_html = qa_html.replace("{%ANSWER%}", "THE ANSWER")
+                if q["language"] == Language.PYTHON:
+                    sample_answer = fetch_sampleAnswer(qb_python + "/api/questions/sample?qId=", q["id"])
+                else:
+                    sample_answer = fetch_sampleAnswer(qb_c + "/api/questions/sample?qId=", q["id"])
+
+                qa_html = qa_html.replace("{%ANSWER%}", "Answer: " + sample_answer)
             else:
                 # cleanup
                 qa_html = qa_html.replace("{%CORRECT%}", "")
