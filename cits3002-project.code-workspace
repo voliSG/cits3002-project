@@ -17,6 +17,9 @@
     "[python]": {
       "editor.defaultFormatter": "ms-python.black-formatter"
     },
-    "python.formatting.provider": "none"
+    "python.formatting.provider": "none",
+    "java.project.sourcePaths": [
+      "src"
+    ]
   }
 }

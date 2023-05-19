@@ -1,0 +1,2 @@
+both:
+	make -C QB
