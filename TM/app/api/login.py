@@ -44,6 +44,9 @@ def fetch_questions(url, num_questions):
 
         return questionData["questions"]
 
+    except json.JSONDecodeError:
+        # all python or all c questions
+        return []
     except URLError as e:
         print("An error occurred:", e)
 
@@ -87,7 +90,9 @@ def POST_login(query, body, **kwargs):
             questions_py = fetch_questions(
                 qb_python + "/api/getQuestions?numQs=", num_python
             )
-            questions_c = fetch_questions(qb_c + "/api/getQuestions?numQs=", num_c)
+            questions_c = fetch_questions(
+                qb_c + "/api/getQuestions?numQs=", num_c
+            )
 
             updateQuestionsSchema(questions_py, Language.PYTHON)
             updateQuestionsSchema(questions_c, Language.C)
