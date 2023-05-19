@@ -26,6 +26,6 @@ public final class PythonBank {
                                         "29\n",
                                         // "def sum_of_squares(arr):\n\tsum = 0\n\tfor i in arr:\n\t\tsum += i **
                                         // 2\n\treturn sum\n\nprint(sum_of_squares([2, 3, 4]))\n# Output: 29\n",
-                                        "/images/py_q3.png")
+                                        "/images/py_q4.png")
         };
 }
