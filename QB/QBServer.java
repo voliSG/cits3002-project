@@ -5,6 +5,8 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.File;
+import java.nio.file.Files;
 import java.net.InetSocketAddress;
 import java.net.URLDecoder;
 
@@ -44,6 +46,7 @@ public class QBServer {
     }
 
     private void loadEndpoints() {
+        // Simple endpoint for testing response
         server.createContext("/api/hello", (exchange -> {
 
             // manually creating a json string
@@ -57,12 +60,8 @@ public class QBServer {
             exchange.close();
         }));
 
-        // Simple endpoint for testing if the server is running and for references
-        // purposes. We can remove it later
-
-        // Endpoint for fetching questions from the Questions Bank arrays, based on the
-        // query parameter, numQuestions, which indicates how many questions should be
-        // fetched.
+        // Endpoint for fetching questions from question banks based on the parameter
+        // numQuestions, which indicates how many questions should be fetched.
         server.createContext("/api/getQuestions", (exchange -> {
             String respText = "{\n\t\"questions\": [\n";
             int numQuestions = Integer.parseInt(exchange.getRequestURI().getQuery().split("=")[1]);
@@ -190,6 +189,18 @@ public class QBServer {
             output.flush();
             exchange.close();
             System.out.println("Response Correct?: " + response);
+        }));
+
+        // an endpoint to serve image files
+        server.createContext("/images", (exchange -> {
+            String path = exchange.getRequestURI().getPath();
+            String fileName = path.substring(path.lastIndexOf("/") + 1);
+            File file = new File("images/" + fileName);
+            exchange.sendResponseHeaders(200, file.length());
+            OutputStream output = exchange.getResponseBody();
+            Files.copy(file.toPath(), output);
+            output.flush();
+            exchange.close();
         }));
     }
 
