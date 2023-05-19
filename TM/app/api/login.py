@@ -5,9 +5,9 @@ from urllib.error import URLError
 from urllib.request import Request, urlopen
 
 from app import users
-from app.enums import Language
 from app.api.helpers import check_login
 from app.config import qb_c, qb_python
+from app.enums import Language
 
 NUM_QUESTIONS_PER_QUIZ = 4
 
