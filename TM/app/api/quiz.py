@@ -3,7 +3,7 @@ from urllib.parse import urlencode
 from urllib.request import Request, urlopen
 
 from app import users
-from app.api.helpers import find, protected, decode_token
+from app.api.helpers import decode_token, find, protected
 from app.config import qb_c, qb_python
 from app.enums import Language
 from app.pages.quiz import MAX_ATTEMPTS

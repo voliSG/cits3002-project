@@ -2,9 +2,9 @@ from urllib.error import URLError
 from urllib.request import Request, urlopen
 
 from app import users
-from app.enums import Language
-from app.config import qb_c, qb_python
 from app.api.helpers import protected
+from app.config import qb_c, qb_python
+from app.enums import Language
 from app.pages.helpers import load_template, replace_nth
 
 MAX_ATTEMPTS = 3
