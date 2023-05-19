@@ -5,6 +5,7 @@ from urllib.error import URLError
 from urllib.request import Request, urlopen
 
 from app import users
+from app.enums import Language
 from app.api.helpers import check_login
 from app.config import qb_c, qb_python
 
@@ -47,11 +48,16 @@ def fetch_questions(url, num_questions):
         print("An error occurred:", e)
 
 
-def updateQuestionsSchema(questions):
+def updateQuestionsSchema(questions, language):
     for question in questions:
         question["attempts"] = 0
         question["correct"] = False
         question["current_answer"] = ""
+
+        if language == Language.PYTHON:
+            question["language"] = Language.PYTHON
+        elif language == Language.C:
+            question["language"] = Language.C
 
     return questions
 
@@ -83,8 +89,8 @@ def POST_login(query, body, **kwargs):
             )
             questions_c = fetch_questions(qb_c + "/api/getQuestions?numQs=", num_c)
 
-            updateQuestionsSchema(questions_py)
-            updateQuestionsSchema(questions_c)
+            updateQuestionsSchema(questions_py, Language.PYTHON)
+            updateQuestionsSchema(questions_c, Language.C)
 
             user = next(u for u in users if u["username"] == username)
 
