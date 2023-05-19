@@ -100,6 +100,22 @@ public class QBServer {
                     "[QBserver - " + language.toString() + "]" + "Sent " + numQuestions + " questions to client!");
         }));
 
+        // Endpoint that fetches the sample response for mcq and code questions
+        // Takes question id as parameters
+        server.createContext("/api/questions/sample", (exchange -> {
+            // get question id
+            int qId = Integer.parseInt(exchange.getRequestURI().getQuery().split("=")[1]);
+
+            QAPair question = questionBank[qId];
+            String sampleAnswer = question.sampleAnswer;
+
+            exchange.sendResponseHeaders(200, sampleAnswer.getBytes().length);
+            OutputStream output = exchange.getResponseBody();
+            output.write(sampleAnswer.getBytes());
+            output.flush();
+            exchange.close();
+        }));
+
         // Endpoint that returns a boolean based on if the user's response to
         // a question is correct
         // Takes question id and user response parameters
