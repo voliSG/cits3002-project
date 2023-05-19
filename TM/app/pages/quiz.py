@@ -17,6 +17,7 @@ MC_MAP = {
 }
 
 
+# Fetches sample answer from QB endpoint
 def fetch_sampleAnswer(url, qId):
     # append qid to url as param
     url += str(qId)
