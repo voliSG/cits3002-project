@@ -163,14 +163,8 @@ public class QBServer {
                     answer = runner.run(answer);
                 } catch (BadCodeException e) {
                     // terminate early if code is bad
-                    response = "false";
-                    exchange.sendResponseHeaders(200, response.getBytes().length);
-                    exchange.sendResponseHeaders(200, response.getBytes().length);
-                    OutputStream output = exchange.getResponseBody();
-                    output.write(response.getBytes());
-                    output.flush();
-                    exchange.close();
-                    return;
+                    System.out.println("bad code");
+                    answer = "";
                 } catch (IOException | InterruptedException e) {
                     e.printStackTrace();
                 }

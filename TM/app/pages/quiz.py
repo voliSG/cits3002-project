@@ -2,9 +2,9 @@ from urllib.error import URLError
 from urllib.request import Request, urlopen
 
 from app import users
-from app.enums import Language
-from app.config import qb_c, qb_python
 from app.api.helpers import protected
+from app.config import qb_c, qb_python
+from app.enums import Language
 from app.pages.helpers import load_template, replace_nth
 
 MAX_ATTEMPTS = 3
@@ -89,12 +89,16 @@ def GET_quiz(query, token=None, username=None):
             if q["attempts"] >= MAX_ATTEMPTS:
                 qa_html = qa_html.replace("{%CORRECT%}", "bg-red-400")
                 qa_html = qa_html.replace("{%DISABLED%}", "disabled")
-                
+
                 # TODO fetch the correct answer from the db
                 if q["language"] == Language.PYTHON:
-                    sample_answer = fetch_sampleAnswer(qb_python + "/api/questions/sample?qId=", q["id"])
+                    sample_answer = fetch_sampleAnswer(
+                        qb_python + "/api/questions/sample?qId=", q["id"]
+                    )
                 else:
-                    sample_answer = fetch_sampleAnswer(qb_c + "/api/questions/sample?qId=", q["id"])
+                    sample_answer = fetch_sampleAnswer(
+                        qb_c + "/api/questions/sample?qId=", q["id"]
+                    )
 
                 qa_html = qa_html.replace("{%ANSWER%}", "Answer: " + sample_answer)
             else:

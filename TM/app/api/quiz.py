@@ -3,7 +3,7 @@ from urllib.parse import urlencode
 from urllib.request import Request, urlopen
 
 from app import users
-from app.api.helpers import find, protected, decode_token
+from app.api.helpers import decode_token, find, protected
 from app.config import qb_c, qb_python
 from app.enums import Language
 from app.pages.quiz import MAX_ATTEMPTS
@@ -32,7 +32,9 @@ def POST_answer(query, body, **kwargs):
         return status, json.dumps(response), {}
 
     questions = users[user_index]["questions"]
-    question_index = next((i for i, q in enumerate(questions) if q["id"] == int(q_id)), -1)
+    question_index = next(
+        (i for i, q in enumerate(questions) if q["id"] == int(q_id)), -1
+    )
     print(question_index)
 
     if question_index == -1:
