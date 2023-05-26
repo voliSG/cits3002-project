@@ -90,7 +90,6 @@ def GET_quiz(query, token=None, username=None):
                 qa_html = qa_html.replace("{%CORRECT%}", "bg-red-400")
                 qa_html = qa_html.replace("{%DISABLED%}", "disabled")
 
-                # TODO fetch the correct answer from the db
                 if q["language"] == Language.PYTHON:
                     if q["type"] == "CODE":
                         sample_answer = (
