@@ -4,8 +4,6 @@ import random
 from urllib.error import URLError
 from urllib.request import Request, urlopen
 
-from colorama import Fore
-
 from app import users
 from app.api.helpers import check_login
 from app.config import qb_c, qb_python
@@ -53,14 +51,8 @@ def fetch_questions(url, num_questions):
         return []
     except URLError as e:
         print(
-            Fore.RED
-            + "An error occurred while connecting to "
-            + Fore.YELLOW
-            + url
-            + Fore.RED
-            + " :\n",
+            "An error occurred while connecting to " + url + " :\n",
             e.reason,
-            Fore.WHITE,
         )
 
 
@@ -108,17 +100,11 @@ def POST_login(query, body, **kwargs):
             updateQuestionsSchema(questions_py, Language.PYTHON)
             updateQuestionsSchema(questions_c, Language.C)
             print(
-                Fore.GREEN
-                + "[TM] Questions have been fetched from the question bank! Fetched "
-                + Fore.YELLOW
+                "[TM] Questions have been fetched from the question bank! Fetched "
                 + str(num_c)
-                + Fore.GREEN
                 + " C questions and "
-                + Fore.YELLOW
                 + str(num_python)
-                + Fore.GREEN
                 + " Python questions."
-                + Fore.WHITE
             )
 
             user = next(u for u in users if u["username"] == username)
