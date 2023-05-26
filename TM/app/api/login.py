@@ -1,10 +1,10 @@
 import base64
 import json
 import random
-import colorama
-from colorama import Fore
 from urllib.error import URLError
 from urllib.request import Request, urlopen
+
+from colorama import Fore
 
 from app import users
 from app.api.helpers import check_login
@@ -44,7 +44,7 @@ def fetch_questions(url, num_questions):
         #     print("\tQ: " + question['question'].replace("\n", "\n  \t"))
         # print(Fore.WHITE)
 
-        if 'questions' not in questionData.keys():
+        if "questions" not in questionData.keys():
             return []
         return questionData["questions"]
 
@@ -53,7 +53,15 @@ def fetch_questions(url, num_questions):
         return []
     except URLError as e:
         print(
-            Fore.RED + "An error occurred while connecting to " + Fore.YELLOW + url + Fore.RED + " :\n", e.reason, Fore.WHITE)
+            Fore.RED
+            + "An error occurred while connecting to "
+            + Fore.YELLOW
+            + url
+            + Fore.RED
+            + " :\n",
+            e.reason,
+            Fore.WHITE,
+        )
 
 
 def updateQuestionsSchema(questions, language):
@@ -89,20 +97,29 @@ def POST_login(query, body, **kwargs):
             print("New login!")
 
             # randomise question distribution
-            num_python, num_c = get_question_distribution(
-                NUM_QUESTIONS_PER_QUIZ)
+            num_python, num_c = get_question_distribution(NUM_QUESTIONS_PER_QUIZ)
 
             # fetch questions
             questions_py = fetch_questions(
                 qb_python + "/api/getQuestions?numQs=", num_python
             )
-            questions_c = fetch_questions(
-                qb_c + "/api/getQuestions?numQs=", num_c)
+            questions_c = fetch_questions(qb_c + "/api/getQuestions?numQs=", num_c)
 
             updateQuestionsSchema(questions_py, Language.PYTHON)
             updateQuestionsSchema(questions_c, Language.C)
-            print(Fore.GREEN + "[TM] Questions have been fetched from the question bank! Fetched " + Fore.YELLOW + str(num_c) +
-                  Fore.GREEN + " C questions and " + Fore.YELLOW + str(num_python) + Fore.GREEN + " Python questions." + Fore.WHITE)
+            print(
+                Fore.GREEN
+                + "[TM] Questions have been fetched from the question bank! Fetched "
+                + Fore.YELLOW
+                + str(num_c)
+                + Fore.GREEN
+                + " C questions and "
+                + Fore.YELLOW
+                + str(num_python)
+                + Fore.GREEN
+                + " Python questions."
+                + Fore.WHITE
+            )
 
             user = next(u for u in users if u["username"] == username)
 

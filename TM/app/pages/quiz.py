@@ -1,7 +1,3 @@
-
-import colorama
-from colorama import Fore
-
 from urllib.error import URLError
 from urllib.request import Request, urlopen
 
@@ -70,8 +66,7 @@ def GET_quiz(query, token=None, username=None):
 
         qa_html = qa_html.replace("{%QUESTION%}", q_html)
         qa_html = qa_html.replace("{%ID%}", str(q["id"]))
-        qa_html = qa_html.replace(
-            "{%ATTEMPTS%}", f"{q['attempts']}/{MAX_ATTEMPTS}")
+        qa_html = qa_html.replace("{%ATTEMPTS%}", f"{q['attempts']}/{MAX_ATTEMPTS}")
 
         # check or fill in their latest answer
         if q["id"] == 0 or q["id"] == 1:
@@ -82,8 +77,7 @@ def GET_quiz(query, token=None, username=None):
                 MC_MAP.get(q.get("current_answer"), -1),
             )
         else:
-            qa_html = qa_html.replace(
-                "{%CURRENT_ANSWER%}", q.get("current_answer", ""))
+            qa_html = qa_html.replace("{%CURRENT_ANSWER%}", q.get("current_answer", ""))
 
         # if correct, disable the question and colour it green
         if q["correct"]:
@@ -99,22 +93,33 @@ def GET_quiz(query, token=None, username=None):
                 # TODO fetch the correct answer from the db
                 if q["language"] == Language.PYTHON:
                     if q["type"] == "CODE":
-                        sample_answer = "<img src='" + qb_python + \
-                            fetch_sampleAnswer(
-                                qb_python + "/api/questions/sample?qId=", q["id"]) + "' >"
+                        sample_answer = (
+                            "<img src='"
+                            + qb_python
+                            + fetch_sampleAnswer(
+                                qb_python + "/api/questions/sample?qId=", q["id"]
+                            )
+                            + "' >"
+                        )
                     else:
                         sample_answer = fetch_sampleAnswer(
-                            qb_python + "/api/questions/sample?qId=", q["id"])
+                            qb_python + "/api/questions/sample?qId=", q["id"]
+                        )
                 else:
                     if q["type"] == "CODE":
-                        sample_answer = "<img src='" + qb_c + \
-                            fetch_sampleAnswer(
-                                qb_c + "/api/questions/sample?qId=", q["id"]) + "' >"
+                        sample_answer = (
+                            "<img src='"
+                            + qb_c
+                            + fetch_sampleAnswer(
+                                qb_c + "/api/questions/sample?qId=", q["id"]
+                            )
+                            + "' >"
+                        )
                     else:
                         sample_answer = fetch_sampleAnswer(
-                            qb_c + "/api/questions/sample?qId=", q["id"])
-                qa_html = qa_html.replace(
-                    "{%ANSWER%}", "Answer: " + sample_answer)
+                            qb_c + "/api/questions/sample?qId=", q["id"]
+                        )
+                qa_html = qa_html.replace("{%ANSWER%}", "Answer: " + sample_answer)
             else:
                 # cleanup
                 qa_html = qa_html.replace("{%CORRECT%}", "")
